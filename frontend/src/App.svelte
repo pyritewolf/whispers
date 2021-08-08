@@ -1,10 +1,26 @@
 <script lang="ts">
+	import { Router, Link, Route } from "svelte-navigator";
+	import Home from './views/Home.svelte';
+	import Login from './views/Login.svelte';
+	
 	export let name: string;
+
 </script>
 
 <main>
 	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+	<Router>
+		<nav>
+			<Link to="/">Home</Link>
+			<Link to="login">login</Link>
+		</nav>
+		<div>
+			<Route path="/">
+				<Home />
+			</Route>
+			<Route path="login" component={Login} />
+		</div>
+	</Router>
 </main>
 
 <style>
