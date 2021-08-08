@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "whispers"
+version = "0.0.1"
+authors = ["Jules Morelli <jmlanghe@gmail.com>"]
+description = "A little helper tool for socials management"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+aiofiles = "^0.6.0"
+Jinja2 = "^2.11.2"
+SQLAlchemy = "^1.4"
+psycopg2 = "^2.8.6"
+alembic = "^1.4.3"
+PyJWT = "^1.7.1"
+pydantic = {extras = ["email"], version = "^1.7.3"}
+requests = "^2.25.1"
+bcrypt = "^3.2.0"
+python-multipart = "^0.0.5"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.1.2"
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | \.js
+  | \.ts
+  | \.css
+  | \.json
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
