@@ -1,0 +1,30 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  # test:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
+
+  #     - name: Setup local vars
+  #       run: cp .env.sample .env
+
+  #     - name: Lift clean DB
+  #       run: docker-compose up -d db
+
+  #     - name: Run tests
+  #       run: ./test.sh
+  build:
+    # needs: test
+    runs-on: ubuntu-latest
+    env:
+      DOCKER_USER: ${{ secrets.DOCKER_USER }}
+      DOCKER_PASS: ${{ secrets.DOCKER_PASS }}
+      DOCKER_REPOSITORY: 'pyritewolf/whispers'
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image & push to Docker Hub
+        run: ./build.sh
