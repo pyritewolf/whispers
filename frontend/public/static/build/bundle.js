@@ -3543,9 +3543,7 @@ var app = (function () {
     			t2 = text("!");
     			t3 = space();
     			create_component(router.$$.fragment);
-    			attr_dev(h1, "class", "svelte-1tky8bj");
     			add_location(h1, file, 7, 1, 192);
-    			attr_dev(main, "class", "svelte-1tky8bj");
     			add_location(main, file, 6, 0, 184);
     		},
     		l: function claim(nodes) {
