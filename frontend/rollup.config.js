@@ -45,17 +45,13 @@ export default {
 			sourceMap: !production,
 			inlineSources: !production
 		}),
-		typescript({
-			sourceMap: !production,
-			inlineSources: !production
-		}),
 
 		// In dev mode, call `npm run start` once
 		// the bundle has been generated
 		!production && dev({
 			dirs: ['public'],
 			port: 5000,
-			proxy: { '/*': 'http://api:8000/' },
+			proxy: { '/api/*': 'http://api:8000/api/' },
 			spa: true,
 		}),
 
