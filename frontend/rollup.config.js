@@ -52,7 +52,7 @@ export default {
 			dirs: ['public'],
 			port: 5000,
 			proxy: { '/api/*': 'http://api:8000/api/' },
-			spa: true,
+			spa: 'public/index.html',
 		}),
 
 		// Watch the `public` directory and refresh the

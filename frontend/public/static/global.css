@@ -9,7 +9,9 @@ html, body {
 	/* colors */
 	--darkest-gray: #111;
 	--dark-gray: #333;
+	--gray: #4f4f4f;
 	--primary: #368B85;
+	--error: indianred;
 	--white: white;
 
 	/* font sizes */

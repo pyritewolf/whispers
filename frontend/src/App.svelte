@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { Router, Link, Route } from "svelte-navigator";
+	import {paths} from "./constants"
+
 	import Home from './views/Home.svelte';
 	import Login from './views/Login.svelte';
 	import Register from './views/Register.svelte';
@@ -13,16 +15,16 @@
 	<h1>Hello {name}!</h1>
 	<Router>
 		<nav>
-			<Link to="/">Home</Link>
-			<Link to="login">login</Link>
-			<Link to="register">Register</Link>
+			<Link to={paths.HOME}>Home</Link>
+			<Link to={paths.LOGIN}>login</Link>
+			<Link to={paths.REGISTER}>Register</Link>
 		</nav>
 		<div>
-			<Route path="/">
+			<Route path={paths.HOME}>
 				<Home />
 			</Route>
-			<Route path="login" component={Login} />
-			<Route path="register" component={Register} />
+			<Route path={paths.LOGIN} component={Login} />
+			<Route path={paths.REGISTER} component={Register} />
 		</div>
 	</Router>
 </main>
