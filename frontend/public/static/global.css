@@ -6,13 +6,18 @@ html, body {
 }
 
 :root {
+	--radius: 4px;
+	--transition: 0.3s;
+
 	/* colors */
 	--darkest-gray: #111;
 	--dark-gray: #333;
 	--gray: #4f4f4f;
 	--primary: #368B85;
+	--secondary: #B4B897;
 	--error: indianred;
 	--white: white;
+	--transparent: transparent;
 
 	/* font sizes */
 	--font-sm: 1.2rem;
@@ -56,9 +61,8 @@ input, button, select, textarea {
 	padding: var(--gap-sm);
 	margin: 0;
 	box-sizing: border-box;
-	border: none;
 	outline: none;
-	border-radius: 2px
+	border: none;
 }
 
 button {
@@ -82,5 +86,10 @@ button:focus {
 h1, h2, h3, h4, h5, h6 {
 	font-weight: bold;
 	font-family: Raleway;
+	margin: 0;
+	outline: none;
+}
+
+p {
 	margin: 0;
 }

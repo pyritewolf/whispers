@@ -21,3 +21,12 @@ export enum Size {
   sm = "small",
   md = "medium",
 };
+
+
+export enum Color {
+  gray = "--gray",
+  primary = "--primary",
+  error = "--error",
+  white = "--white",
+  transparent = "--transparent",
+}

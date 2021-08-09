@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { onMount} from "svelte";
   import { InputType } from "../types/components"
+
   export let name : string;
   export let placeholder : string = "";
   export let type : InputType = InputType.text;
@@ -8,6 +10,7 @@
   export let required : boolean = false;
   export let help : string | null = null;
   export let error : string | null = null;
+  export let autofocus : boolean = false;
   
   let inputElement;
   let focused : boolean = false;
@@ -20,7 +23,11 @@
       : e.target.value;
   };
 
-  // const setFocus = () => inputElement.focus();
+  const setFocus = () => inputElement.focus();
+
+  onMount(() => {
+    if (autofocus) setFocus();
+  });
 </script>
 <div
   class="input"
@@ -51,7 +58,7 @@
 <style>
   .input {
     height: 5.5rem;
-    padding-bottom: var(--gap-sm);
+    padding-bottom: var(--gap-md);
   }
 
   .top {
@@ -91,5 +98,13 @@
     width: 100%;
     color: var(--white);
     font-size: var(--font-md);
+    border: 1px double var(--transparent);
+    border-radius: var(--radius);
+    transition: var(--transition);
+  }
+
+  input:focus {
+    border: 1px solid var(--primary);
+    transition: var(--transition);
   }
 </style>
