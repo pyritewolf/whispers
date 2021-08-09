@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Raleway:wght@700&display=swap');
+      * {
+        box-sizing: border-box;
+      }
+
+      .background {
+        background-color: #111;
+        padding: 24px;
+      }
+
+      .wrapper {
+        color: white;
+        font-size: 14px;
+        width: 500px;
+        margin: auto;
+        font-family: "Atkinson Hyperlegible",sans-serif;
+        background-color: #333;
+        padding: 16px;
+        border-radius: 4px;
+      }
+
+      .header {
+        font-family: Raleway, sans-serif;
+        font-weight: bold;
+        font-size: 2rem;
+        text-align: center;
+      }
+
+      .button {
+        border-radius: 4px;
+        color: white;
+        text-decoration: none;
+        background-color: #368B85;
+        display: inline-block;
+        padding: 16px;
+        text-transform: uppercase;
+        margin: auto;
+      }
+
+      .tiny_link {
+        text-align: center;
+        color: #368B85;
+        display: inline-block;
+        padding-top: 8px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="background">
+      <div class="wrapper">
+        <div class="header">
+          Welcome to whispers!
+        </div>
+        <div class="content">
+          <p>Hi {{username}}!</p>
+          <p>It's nice to see you around. You're almost signed up! Right now we just need you to...</p>
+          <a href="{{url}}" class="button">Click here</a>
+          <a href="{{url}}" class="tiny_link">{{url}}</a>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

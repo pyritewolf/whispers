@@ -50,7 +50,7 @@ class Settings(BaseSettings):
     POSTGRES_HOST: str
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
-    POSTGRES_PORT: str = '5432'
+    POSTGRES_PORT: str = "5432"
     POSTGRES_DB: str
     POSTGRES_TEST_DB: str
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
@@ -71,7 +71,9 @@ class Settings(BaseSettings):
     SQLALCHEMY_TEST_DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("SQLALCHEMY_TEST_DATABASE_URI", pre=True)
-    def assemble_test_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
+    def assemble_test_db_connection(
+        cls, v: Optional[str], values: Dict[str, Any]
+    ) -> Any:
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
@@ -86,14 +88,14 @@ class Settings(BaseSettings):
     DB_POOL_SIZE: int = 20
 
     # pw recovery
-    # RESET_PASSWORD_EXPIRATION_SECONDS: int = 86400  # 1 day default
-    # COOKIE_EXPIRATION_SECONDS: int = 604800  # 7 days default
+    RESET_PASSWORD_EXPIRATION_SECONDS: int = 86400  # 1 day default
+    COOKIE_EXPIRATION_SECONDS: int = 604800  # 7 days default
 
     # mailing settings
-    # EMAILS_FROM_NAME: str
-    # EMAILS_FROM_ADDRESS: str
-    # MAILGUN_DOMAIN: str
-    # MAILGUN_KEY: str
+    EMAILS_FROM_NAME: str
+    EMAILS_FROM_ADDRESS: str
+    MAILGUN_DOMAIN: str
+    MAILGUN_KEY: str
 
 
 class Config:

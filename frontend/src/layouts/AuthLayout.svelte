@@ -1,17 +1,12 @@
 <script lang="ts">
 </script>
 
-<div class="wrapper">
-  <div class="card">
-    <slot/>
-  </div>
-</div>
-
 <style>
   .wrapper {
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: 80vh;
   }
 
   .card {
@@ -21,3 +16,9 @@
     width: 400px;
   }
 </style>
+
+<div class="wrapper">
+  <div class="card">
+    <slot />
+  </div>
+</div>
