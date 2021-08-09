@@ -47,6 +47,10 @@
         padding-top: 8px;
         font-size: 12px;
       }
+
+      .center {
+        text-align: center;
+      }
     </style>
   </head>
   <body>
@@ -58,8 +62,10 @@
         <div class="content">
           <p>Hi {{username}}!</p>
           <p>It's nice to see you around. You're almost signed up! Right now we just need you to...</p>
-          <a href="{{url}}" class="button">Click here</a>
-          <a href="{{url}}" class="tiny_link">{{url}}</a>
+          <p class="center">
+            <a href="{{url}}" class="button">Click here</a>
+            <a href="{{url}}" class="tiny_link">{{url}}</a>
+          </p>
         </div>
       </div>
     </div>

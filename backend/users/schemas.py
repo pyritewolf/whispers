@@ -9,7 +9,6 @@ class UserBase(BaseSchema):
     email: str
     role: Role = Role.user
     username: str
-    recovery_token: Optional[str]
 
 
 class UserOut(UserBase):
@@ -18,6 +17,7 @@ class UserOut(UserBase):
 
 class UserIn(UserBase):
     password: SecretStr
+    recovery_token: Optional[str]
 
 
 class UserUpdate(UserBase):

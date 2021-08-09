@@ -29,6 +29,7 @@ html, body {
 	--gap-sm: 0.8rem;
 	--gap-md: 1.6rem;
 	--gap-lg: 2.4rem;
+	--gap-xl: 4rem;
 }
 
 body {

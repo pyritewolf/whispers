@@ -67,7 +67,7 @@ def handle_register(db: Session, user: schemas.Register) -> user_schemas.UserOut
         {"id": db_user.id}, settings.RESET_PASSWORD_EXPIRATION_SECONDS
     )
     url = f"{settings.CLIENT_URL}/onboarding?token={token}"
-    db_user = crud.update(db=db, db_obj=db_user, obj_in={"reset_password_token": token})
+    db_user = crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": token})
 
     succesfully_sent = MailingService.get_instance().send(
         template="register.html.jinja2",

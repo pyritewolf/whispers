@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { onMount} from "svelte";
-  import { InputType } from "../types/components"
+  import { onMount } from "svelte";
+  import { InputType } from "../types/components";
 
-  export let name : string;
-  export let placeholder : string = "";
-  export let type : InputType = InputType.text;
-  export let value : string | number = "";
-  export let label : string  = "";
-  export let required : boolean = false;
-  export let help : string | null = null;
-  export let error : string | null = null;
-  export let autofocus : boolean = false;
-  
+  export let name: string;
+  export let placeholder: string = "";
+  export let type: InputType = InputType.text;
+  export let value: string | number = "";
+  export let label: string = "";
+  export let required: boolean = false;
+  export let help: string | null = null;
+  export let error: string | null = null;
+  export let autofocus: boolean = false;
+
   let inputElement;
-  let focused : boolean = false;
+  let focused: boolean = false;
 
   const handleInput = (e) => {
     // in here, you can switch on type and implement
@@ -29,36 +29,11 @@
     if (autofocus) setFocus();
   });
 </script>
-<div
-  class="input"
-  class:focused
-  class:error={!!error}>
-  <div class="top">
-    {#if label}<label for={name}>
-      {label}{#if required}<span> *</span>{/if}
-    </label>{/if}
-    {#if help && !error}
-      <div class="help">{help}</div>
-    {/if}
-    {#if error}
-      <div class="error">{error}</div>
-    {/if}
-  </div>
-  <input
-    bind:this={inputElement}
-    {type}
-    {value}
-    {placeholder}
-    {name}
-    {required}
-    on:focus={() => focused = true}
-    on:blur={() => focused = false}
-    on:input={handleInput} />
-</div>
+
 <style>
   .input {
     height: 5.5rem;
-    padding-bottom: var(--gap-md);
+    padding-bottom: var(--gap-lg);
   }
 
   .top {
@@ -75,7 +50,7 @@
     font-weight: bold;
     font-size: var(--font-md);
   }
-  
+
   label span {
     color: var(--error);
   }
@@ -108,3 +83,29 @@
     transition: var(--transition);
   }
 </style>
+
+<div class="input" class:focused class:error={!!error}>
+  <div class="top">
+    {#if label}
+      <label for={name}>
+        {label}{#if required}<span> *</span>{/if}
+      </label>
+    {/if}
+    {#if help && !error}
+      <div class="help">{help}</div>
+    {/if}
+    {#if error}
+      <div class="error">{error}</div>
+    {/if}
+  </div>
+  <input
+    bind:this={inputElement}
+    {type}
+    {value}
+    {placeholder}
+    {name}
+    {required}
+    on:focus={() => (focused = true)}
+    on:blur={() => (focused = false)}
+    on:input={handleInput} />
+</div>
