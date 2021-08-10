@@ -15,6 +15,11 @@ class UserOut(UserBase):
     id: int
 
 
+class UserAuthed(UserBase):
+    id: int
+    token: str
+
+
 class UserIn(UserBase):
     password: SecretStr
     recovery_token: Optional[str]

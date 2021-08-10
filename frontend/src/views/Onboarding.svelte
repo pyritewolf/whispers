@@ -55,7 +55,7 @@
       <h1>All good!</h1>
       <p>Yey! You're good to go.</p>
       <p>
-        <Link to={paths.LOGIN}>
+        <Link to={paths.SIGN_IN}>
           <Button color={Color.primary}>Log in!</Button>
         </Link>
       </p>
@@ -68,7 +68,7 @@
       <p>
         Have you tried our
         <Link to={paths.PASSWORD_RECOVERY}>password recovery</Link>? Or
-        <Link to={paths.LOGIN}>log in</Link>
+        <Link to={paths.SIGN_IN}>log in</Link>
         if you've already got an account.
       </p>
     {/if}

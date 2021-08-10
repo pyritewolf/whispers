@@ -8,15 +8,11 @@ export default derived(user, ($user) => {
     path: string,
     options: any = { headers: {} }
   ): Promise<APIResponse | null> => {
-    let token = localStorage.getItem("token");
-    if (!token) {
-      token = new URLSearchParams(window.location.search).get("token");
-      if (token) localStorage.setItem("token", token);
-    }
+    let user = JSON.parse(localStorage.getItem("user"));
     const opts = { ...options };
-    if (token)
+    if (user)
       opts.headers = {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${user.token}`,
         ...options.headers,
       };
     if (opts.body)
@@ -31,7 +27,7 @@ export default derived(user, ($user) => {
     };
     if (response.status === 401) {
       user.update(() => {
-        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         return null;
       });
       window.location.replace(paths.SIGN_IN);

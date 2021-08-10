@@ -5,6 +5,7 @@
   import AuthLayout from "../layouts/AuthLayout.svelte";
   import Input from "../components/Input.svelte";
   import Button from "../components/Button.svelte";
+  import { user } from "../stores";
   import {
     APIStatus,
     Color,
@@ -29,6 +30,9 @@
     });
     if (response.status === APIStatus.error) return (formError = response.body);
     formError = null;
+    user.set(response.body);
+    localStorage.setItem("user", JSON.stringify(response.body));
+    window.location.replace(paths.HOME);
   };
 </script>
 

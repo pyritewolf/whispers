@@ -8,7 +8,7 @@ from config import settings
 from db.session import get_session
 from security import create_jwt_token
 from auth.schemas import Register, Token
-from users.schemas import UserOut
+from users.schemas import UserOut, UserAuthed
 from auth import controller
 
 
@@ -29,7 +29,7 @@ def onboard(
     return controller.handle_onboarding(db=db, token=data.token)
 
 
-@router.post("/signin", response_model=UserOut)
+@router.post("/signin", response_model=UserAuthed)
 async def login(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -37,7 +37,9 @@ async def login(
 ):
     user = controller.authenticate_user(db, form_data.username, form_data.password)
     token = create_jwt_token({"id": user.id}, settings.COOKIE_EXPIRATION_SECONDS)
-    response = JSONResponse(user.dict(by_alias=True), status_code=200)
+    response = JSONResponse(
+        {**user.dict(by_alias=True), "token": token}, status_code=200
+    )
     response.set_cookie(
         "Authorization",
         value=f"Bearer {token}",

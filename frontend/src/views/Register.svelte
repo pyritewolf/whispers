@@ -21,17 +21,24 @@
     confirmPassword: "",
     username: "",
   };
+
+  const status = {
+    STARTED: "STARTED",
+    LOADING: "LOADING",
+    SUBMITTED: "SUBMITTED",
+  };
   let formError = null;
-  let formSubmitted = false;
+  let current_status = status.STARTED;
 
   const handleSubmit = async () => {
+    current_status = status.LOADING;
     const response = await $api("/api/auth/register", {
       method: "POST",
       body: JSON.stringify(formData),
     });
     if (response.status === APIStatus.error) return (formError = response.body);
     formError = null;
-    formSubmitted = true;
+    current_status = status.SUBMITTED;
   };
 </script>
 
@@ -49,7 +56,7 @@
 
 <AuthLayout>
   <h1>Sign up</h1>
-  {#if formSubmitted}
+  {#if current_status === status.SUBMITTED}
     <p>
       <Icon name={IconName.mail_bulk} size={Gap.xl} color={Color.secondary} />
     </p>
@@ -62,7 +69,7 @@
     Already got an account?
     <Link to={paths.SIGN_IN}>Log in</Link>!
   </p>
-  {#if !formSubmitted}
+  {#if current_status !== status.SUBMITTED}
     <form on:submit|preventDefault={handleSubmit}>
       <Input
         autofocus={true}
@@ -91,7 +98,11 @@
         bind:value={formData.confirmPassword}
         error={getErrorFor('confirm_password', formError)}
         name="confirm-password" />
-      <Button color={Color.primary}>Get started!</Button>
+      <Button
+        color={Color.primary}
+        disabled={current_status === status.LOADING}>
+        Get started!
+      </Button>
     </form>
   {/if}
 </AuthLayout>
