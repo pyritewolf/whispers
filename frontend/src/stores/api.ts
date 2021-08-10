@@ -34,7 +34,7 @@ export default derived(user, ($user) => {
         localStorage.removeItem("token");
         return null;
       });
-      window.location.replace(paths.LOGIN);
+      window.location.replace(paths.SIGN_IN);
     }
     if (response.status < 200 || response.status >= 300)
       result.status = APIStatus.error;

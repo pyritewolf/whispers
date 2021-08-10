@@ -1,0 +1,66 @@
+<script lang="ts">
+  import { Link } from "svelte-navigator";
+  import { paths } from "../constants";
+  import { api } from "../stores";
+  import AuthLayout from "../layouts/AuthLayout.svelte";
+  import Input from "../components/Input.svelte";
+  import Button from "../components/Button.svelte";
+  import {
+    APIStatus,
+    Color,
+    getErrorFor,
+    InputType,
+  } from "../types/components";
+
+  const formData = {
+    userIdentifier: "",
+    password: "",
+  };
+  let formError = null;
+
+  const handleSubmit = async () => {
+    const response = await $api("/api/auth/signin", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    });
+    if (response.status === APIStatus.error) return (formError = response.body);
+    formError = null;
+  };
+</script>
+
+<style>
+  h1 {
+    text-align: center;
+    padding-bottom: var(--gap-md);
+  }
+
+  p {
+    text-align: center;
+    padding-bottom: var(--gap-md);
+  }
+</style>
+
+<AuthLayout>
+  <h1>Sign in</h1>
+  <p>
+    Having trouble?
+    <Link to={paths.PASSWORD_RECOVERY}>Reset your password</Link>!
+  </p>
+  <form on:submit|preventDefault={handleSubmit}>
+    <Input
+      autofocus={true}
+      label="E-mail or username"
+      placeholder="coolstreamer@gmail.com"
+      bind:value={formData.userIdentifier}
+      error={getErrorFor('user_identifier', formError)}
+      name="user_identifier" />
+    <Input
+      label="Password"
+      type={InputType.password}
+      placeholder="safetaters69"
+      bind:value={formData.password}
+      error={getErrorFor('password', formError)}
+      name="password" />
+    <Button color={Color.primary}>Log in!</Button>
+  </form>
+</AuthLayout>

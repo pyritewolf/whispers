@@ -43,10 +43,7 @@
 
   p {
     text-align: center;
-  }
-
-  p + p {
-    padding-top: var(--gap-md);
+    padding-bottom: var(--gap-md);
   }
 </style>
 
@@ -63,7 +60,7 @@
   {/if}
   <p>
     Already got an account?
-    <Link to={paths.LOGIN}>Log in</Link>!
+    <Link to={paths.SIGN_IN}>Log in</Link>!
   </p>
   {#if !formSubmitted}
     <form on:submit|preventDefault={handleSubmit}>
