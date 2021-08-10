@@ -1,14 +1,17 @@
 from typing import Optional
 
+import jwt
 from sqlalchemy.orm import Session
 from starlette.requests import Request
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Depends
 from fastapi.security.utils import get_authorization_scheme_param
 from fastapi.openapi.models import OAuthFlows as OAuthFlowsModel
 from fastapi.security import OAuth2
 
 from config import settings
-from security import create_jwt_token
+from schemas import BaseSchema
+from db.session import get_session
+from security import create_jwt_token, verify_password
 from exceptions import CREDENTIALS_EXCEPTION, get_pydanticlike_error
 from mailing import MailingService
 from auth import schemas
@@ -58,7 +61,7 @@ class OAuth2PasswordBearerCookie(OAuth2):
         return param
 
 
-oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="api/auth")
+oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="api/auth/signin")
 
 
 def handle_register(db: Session, user: schemas.Register) -> user_schemas.UserOut:
@@ -68,14 +71,12 @@ def handle_register(db: Session, user: schemas.Register) -> user_schemas.UserOut
     )
     url = f"{settings.CLIENT_URL}/onboarding?token={token}"
     db_user = crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": token})
-
     succesfully_sent = MailingService.get_instance().send(
         template="register.html.jinja2",
         to=db_user.email,
         variables={"url": url, "username": db_user.username},
         subject="Welcome to Whispers!",
     )
-
     if not succesfully_sent:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -83,7 +84,6 @@ def handle_register(db: Session, user: schemas.Register) -> user_schemas.UserOut
                 "user", "We couldn't send you your registration email. Try again?",
             ),
         )
-
     return db_user
 
 
@@ -95,3 +95,36 @@ def handle_onboarding(db: Session, token: str) -> None:
             detail=get_pydanticlike_error("token", "This link is invalid!",),
         )
     crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": None})
+
+
+def authenticate_user(db: Session, user_identifier: str, password: str) -> str:
+    user = crud.get_by(db, "email", user_identifier)
+    if not user:
+        user = crud.get_by(db, "username", user_identifier)
+    if not user or not verify_password(password, user.password):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=get_pydanticlike_error("auth", "Wrong user or password, pal"),
+        )
+    return user_schemas.UserOut.from_orm(user)
+
+
+async def get_token_contents(schema: BaseSchema, token: str = Depends(oauth2_scheme)):
+    try:
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=["HS512"])
+        return schema.parse_obj(payload)
+    except jwt.PyJWTError:
+        return None
+    return None
+
+
+async def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_session)
+) -> user_schemas.UserIn:
+    token_data = await get_token_contents(schemas.UserToken, token=token)
+    if token_data is None:
+        raise CREDENTIALS_EXCEPTION
+    user = crud.get_by(db, "id", token_data.id)
+    if user is None:
+        raise CREDENTIALS_EXCEPTION
+    return user_schemas.UserIn.from_orm(user)

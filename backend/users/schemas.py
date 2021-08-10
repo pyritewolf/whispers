@@ -12,7 +12,7 @@ class UserBase(BaseSchema):
 
 
 class UserOut(UserBase):
-    pass
+    id: int
 
 
 class UserIn(UserBase):

@@ -23,6 +23,5 @@ def get_hashed_password(password: SecretStr):
 
 def verify_password(plain_password: SecretStr, hashed_password: str) -> bool:
     return bcrypt.checkpw(
-        plain_password.get_secret_value().encode("utf8"),
-        hashed_password.encode("utf8"),
+        plain_password.encode("utf8"), hashed_password.encode("utf8"),
     )

@@ -19,9 +19,13 @@
   let formError = null;
 
   const handleSubmit = async () => {
+    const params = new URLSearchParams();
+    params.append("username", formData.userIdentifier);
+    params.append("password", formData.password);
     const response = await $api("/api/auth/signin", {
       method: "POST",
-      body: JSON.stringify(formData),
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params,
     });
     if (response.status === APIStatus.error) return (formError = response.body);
     formError = null;
@@ -52,14 +56,13 @@
       label="E-mail or username"
       placeholder="coolstreamer@gmail.com"
       bind:value={formData.userIdentifier}
-      error={getErrorFor('user_identifier', formError)}
       name="user_identifier" />
     <Input
       label="Password"
       type={InputType.password}
       placeholder="safetaters69"
       bind:value={formData.password}
-      error={getErrorFor('password', formError)}
+      error={getErrorFor('auth', formError)}
       name="password" />
     <Button color={Color.primary}>Log in!</Button>
   </form>

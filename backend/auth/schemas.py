@@ -24,3 +24,7 @@ class Token(BaseSchema):
         if not v:
             raise ValueError("This link is invalid!")
         return v
+
+
+class UserToken(BaseSchema):
+    id: int
