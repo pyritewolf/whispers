@@ -12,7 +12,9 @@ jobs:
         run: cp .env.sample .env
 
       - name: Lift clean DB
-        run: docker-compose run --rm api python3 db/init.py
+        run: |
+          docker-compose up -d db
+          docker-compose run --rm api python3 db/init.py
 
       - name: Run tests
         run: docker-compose run --rm -e POSTGRES_DB='whispers_test' api pytest
