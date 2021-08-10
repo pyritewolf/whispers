@@ -14,3 +14,13 @@ class Register(BaseSchema):
         if v != values["password"]:
             raise ValueError("Passwords don't match, buddy!")
         return v
+
+
+class Token(BaseSchema):
+    token: str
+
+    @validator("token", pre=True)
+    def check_token_is_present(cls, v):
+        if not v:
+            raise ValueError("This link is invalid!")
+        return v

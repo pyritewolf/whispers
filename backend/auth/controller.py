@@ -85,3 +85,13 @@ def handle_register(db: Session, user: schemas.Register) -> user_schemas.UserOut
         )
 
     return db_user
+
+
+def handle_onboarding(db: Session, token: str) -> None:
+    db_user = crud.get_by(db, "recovery_token", token)
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=get_pydanticlike_error("token", "This link is invalid!",),
+        )
+    crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": None})

@@ -25,7 +25,10 @@ export default derived(user, ($user) => {
         ...opts.headers,
       };
     const response = await fetch(path, opts);
-    const body = await response.json();
+    const result = {
+      status: APIStatus.ok,
+      body: (await response.json()) || {},
+    };
     if (response.status === 401) {
       user.update(() => {
         localStorage.removeItem("token");
@@ -33,10 +36,10 @@ export default derived(user, ($user) => {
       });
       window.location.replace(paths.LOGIN);
     }
-    let status = APIStatus.ok;
     if (response.status < 200 || response.status >= 300)
-      status = APIStatus.error;
-    return { status, body: body.detail };
+      result.status = APIStatus.error;
+    if ("details" in result.body) result.body = result.body.details;
+    return result;
   };
   return method;
 });

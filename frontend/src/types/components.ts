@@ -1,4 +1,4 @@
-import { User } from "./entities";
+import type { User } from "./entities";
 
 export enum InputType {
   text = "text",
@@ -18,6 +18,9 @@ export enum IconName {
   send = "paper-plane",
   mail_bulk = "mail-bulk",
   close = "times",
+  newspaper = "newspaper",
+  thumbs_up = "thumbs-up",
+  skull_crossbones = "skull-crossbones",
 }
 
 export enum Size {
