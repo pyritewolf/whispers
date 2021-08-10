@@ -3,21 +3,21 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - name: Setup local vars
-  #       run: cp .env.sample .env
+      - name: Setup local vars
+        run: cp .env.sample .env
 
-  #     - name: Lift clean DB
-  #       run: docker-compose up -d db
+      - name: Lift clean DB
+        run: docker-compose run --rm api python3 db/init.py
 
-  #     - name: Run tests
-  #       run: ./test.sh
+      - name: Run tests
+        run: docker-compose run --rm -e POSTGRES_DB='whispers_test' api pytest
   build:
-    # needs: test
+    needs: test
     runs-on: ubuntu-latest
     env:
       DOCKER_USER: ${{ secrets.DOCKER_USER }}

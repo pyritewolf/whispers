@@ -7,9 +7,17 @@ A small tool to merge chats from different sources
 1. Clone the project
 2. Copy `.env.sample` to an `.env` file
 3. Run `./dev-setup.sh`
-4. Run `docker-compose up` (make sure to have docker & docker-compose)
-5. Visit http://localhost:5000 (or http://ui.whispers.lvh.me:5000 if you're using [dockerdev](https://github.com/waj/dockerdev))!
+   - Make sure to run this command every time you update your working branch!
+5. Run `docker-compose up` (make sure to have docker & docker-compose)
+6. Visit http://localhost:5000 (or http://ui.whispers.lvh.me:5000 if you're using [dockerdev](https://github.com/waj/dockerdev))!
 
+### Running tests
+
+If you want to run the test suite locally, use the following command:
+
+```zsh
+docker-compose run --rm -e POSTGRES_DB='whispers_test' api pytest
+```
 
 ### Interacting with the Database
 
