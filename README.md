@@ -1,5 +1,7 @@
 # whispers
 
+[![CI](https://github.com/pyritewolf/whispers/actions/workflows/main.yml/badge.svg)](https://github.com/pyritewolf/whispers/actions/workflows/main.yml)
+
 A small tool to merge chats from different sources
 
 ## Development
