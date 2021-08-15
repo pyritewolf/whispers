@@ -19,6 +19,7 @@ html, body {
 	--error: indianred;
 	--white: white;
 	--transparent: transparent;
+	--youtube: #FF0000;
 
 	/* font sizes */
 	--font-sm: 1.2rem;
@@ -38,7 +39,7 @@ body {
 	color: var(--white);
 	font-size: var(--font-md);
 	margin: 0;
-	padding: var(--gap-lg);
+	padding: 0;
 	box-sizing: border-box;
 	font-family: "Atkinson Hyperlegible", sans-serif;
 }

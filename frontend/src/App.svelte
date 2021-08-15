@@ -6,16 +6,28 @@
   import SignIn from "./views/SignIn.svelte";
   import Onboarding from "./views/Onboarding.svelte";
   import Register from "./views/Register.svelte";
-
-  export let name: string;
 </script>
 
 <style>
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--gap-md) var(--gap-lg);
+  }
+
+  main {
+    padding: var(--gap-lg);
+  }
+
+  nav {
+    text-transform: uppercase;
+  }
 </style>
 
-<main>
-  <h1>Hello {name}!</h1>
-  <Router>
+<Router>
+  <header>
+    <h1>whispers</h1>
     <nav>
       {#if $user}
         <Link to={paths.HOME}>Home</Link>
@@ -24,16 +36,16 @@
         <Link to={paths.REGISTER}>Register</Link>
       {/if}
     </nav>
-    <div>
-      {#if $user}
-        <Route path={paths.HOME}>
-          <Home />
-        </Route>
-      {:else}
-        <Route path={paths.SIGN_IN} component={SignIn} />
-        <Route path={paths.REGISTER} component={Register} />
-        <Route path={paths.ONBOARDING} component={Onboarding} />
-      {/if}
-    </div>
-  </Router>
-</main>
+  </header>
+  <main>
+    {#if $user}
+      <Route path={paths.HOME}>
+        <Home />
+      </Route>
+    {:else}
+      <Route path={paths.SIGN_IN} component={SignIn} />
+      <Route path={paths.REGISTER} component={Register} />
+      <Route path={paths.ONBOARDING} component={Onboarding} />
+    {/if}
+  </main>
+</Router>

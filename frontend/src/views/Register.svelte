@@ -10,7 +10,7 @@
     Color,
     Gap,
     getErrorFor,
-    IconName,
+    NormalIcon,
     InputType,
   } from "../types/components";
   import Icon from "../components/Icon.svelte";
@@ -58,7 +58,7 @@
   <h1>Sign up</h1>
   {#if current_status === status.SUBMITTED}
     <p>
-      <Icon name={IconName.mail_bulk} size={Gap.xl} color={Color.secondary} />
+      <Icon name={NormalIcon.mail_bulk} size={Gap.xl} color={Color.secondary} />
     </p>
     <p>
       Cool! Now check your email like the good grown-up you are to complete the

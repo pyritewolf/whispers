@@ -1,8 +1,17 @@
 <script lang="ts">
-  import { Gap, Color, IconName } from "../types/components";
+  import { onMount } from "svelte";
+  import { Gap, Color, BrandIcon } from "../types/components";
+  import type { IconName } from "../types/components";
   export let name: IconName;
   export let size: Gap = Gap.md;
   export let color: Color = Color.white;
+
+  let lineAwesomeClass: string = "las";
+
+  onMount(() => {
+    if ((<any>Object).values(BrandIcon).includes(name))
+      lineAwesomeClass = "lab";
+  });
 </script>
 
 <style>
@@ -14,5 +23,5 @@
 </style>
 
 <i
-  class="icon las la-{name}"
+  class="icon {lineAwesomeClass} la-{name}"
   style="--size: var({size}); --color: var({color})" />

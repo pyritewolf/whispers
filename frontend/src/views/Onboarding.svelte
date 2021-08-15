@@ -9,7 +9,7 @@
     Color,
     Gap,
     getErrorFor,
-    IconName,
+    NormalIcon,
   } from "../types/components";
   import Icon from "../components/Icon.svelte";
   import Button from "../components/Button.svelte";
@@ -43,14 +43,14 @@
 <AuthLayout>
   {#await promise}
     <p>
-      <Icon name={IconName.newspaper} size={Gap.xl} />
+      <Icon name={NormalIcon.newspaper} size={Gap.xl} />
     </p>
     <h1>One sec...</h1>
     <p>Verifying your email...</p>
   {:then response}
     {#if response.status === APIStatus.ok}
       <p>
-        <Icon name={IconName.thumbs_up} size={Gap.xl} />
+        <Icon name={NormalIcon.thumbs_up} size={Gap.xl} />
       </p>
       <h1>All good!</h1>
       <p>Yey! You're good to go.</p>
@@ -61,7 +61,7 @@
       </p>
     {:else}
       <p>
-        <Icon name={IconName.skull_crossbones} size={Gap.xl} />
+        <Icon name={NormalIcon.skull_crossbones} size={Gap.xl} />
       </p>
       <h1>Damn</h1>
       <p>{getErrorFor('token', response.body)}</p>
@@ -74,7 +74,7 @@
     {/if}
   {:catch error}
     <p>
-      <Icon name={IconName.skull_crossbones} size={Gap.xl} />
+      <Icon name={NormalIcon.skull_crossbones} size={Gap.xl} />
     </p>
     <h1>Damn</h1>
     {error}
@@ -82,7 +82,7 @@
     <p>
       Have you tried our
       <Link to={paths.PASSWORD_RECOVERY}>password recovery</Link>? Or
-      <Link to={paths.LOGIN}>log in</Link>
+      <Link to={paths.SIGN_IN}>log in</Link>
       if you've already got an account.
     </p>
   {/await}

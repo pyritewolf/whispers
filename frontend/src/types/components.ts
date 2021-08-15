@@ -12,7 +12,9 @@ export enum ButtonType {
   button = "button",
 }
 
-export enum IconName {
+export type IconName = NormalIcon | BrandIcon;
+
+export enum NormalIcon {
   trash = "trash",
   edit = "edit",
   send = "paper-plane",
@@ -21,6 +23,12 @@ export enum IconName {
   newspaper = "newspaper",
   thumbs_up = "thumbs-up",
   skull_crossbones = "skull-crossbones",
+}
+
+export enum BrandIcon {
+  youtube = "youtube",
+  twitch = "twitch",
+  github = "github",
 }
 
 export enum Size {
@@ -43,6 +51,7 @@ export enum Color {
   error = "--error",
   white = "--white",
   transparent = "--transparent",
+  youtube = "--youtube",
 }
 
 export enum APIStatus {
