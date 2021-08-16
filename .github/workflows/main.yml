@@ -17,7 +17,24 @@ jobs:
           docker-compose run --rm api python3 db/init.py
 
       - name: Run tests
-        run: docker-compose run --rm -e POSTGRES_DB='whispers_test' api pytest
+        run: docker-compose run --rm -e POSTGRES_DB='whispers_test' api pytest --cov=. 
+
+      - name: Generate coverage badge
+        run: docker-compose run --rm -e POSTGRES_DB='whispers_test' api coverage-badge -o coverage.svg -f
+
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+
+      - uses: EndBug/add-and-commit@v7
+        if: ${{ steps.extract_branch.outputs.branch == 'main' }}
+        with:
+          add: './backend/.coverage ./backend/coverage.svg'
+          author_name: Github Action
+          author_email: jmlanghe@gmail.com
+          message: 'Add coverage badge'
+
   build:
     needs: test
     runs-on: ubuntu-latest

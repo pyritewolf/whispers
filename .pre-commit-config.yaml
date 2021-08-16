@@ -25,10 +25,10 @@ repos:
           - prettier-plugin-svelte@1.4.1
         files: \.(js|ts|svelte)$
         exclude: backend/
-  - repo: https://github.com/sirosen/check-jsonschema
-    rev: 0.3.0
-    hooks:
-      - id: check-github-workflows
+  # - repo: https://github.com/sirosen/check-jsonschema
+  #   rev: 0.3.0
+  #   hooks:
+  #     - id: check-github-workflows
   - repo: https://github.com/motet-a/jinjalint
     rev: ""
     hooks:
