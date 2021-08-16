@@ -17,7 +17,7 @@
   const token = new URLSearchParams(window.location.search).get("token");
 
   const verifyToken = async () => {
-    return await $api("/api/auth/onboard", {
+    return await $api("/auth/onboard", {
       method: "POST",
       body: JSON.stringify({ token }),
     });
@@ -45,7 +45,7 @@
     <p>
       <Icon name={NormalIcon.newspaper} size={Gap.xl} />
     </p>
-    <h1>One sec...</h1>
+    <h1>One sec!</h1>
     <p>Verifying your email...</p>
   {:then response}
     {#if response.status === APIStatus.ok}

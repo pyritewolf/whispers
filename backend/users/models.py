@@ -1,6 +1,7 @@
 from enum import Enum
 
 from sqlalchemy import Column, Integer, String, Enum as DBEnum
+from sqlalchemy.ext.hybrid import hybrid_property
 
 from db import BaseModel
 
@@ -19,3 +20,11 @@ class User(BaseModel):
     role = Column(DBEnum(Role), default=Role.user, nullable=False)
     username = Column(String, nullable=False, unique=True)
     recovery_token = Column(String)
+    google_auth_token = Column(String)
+    google_refresh_token = Column(String)
+
+    @hybrid_property
+    def has_youtube_auth(self) -> bool:
+        return (
+            self.google_auth_token is not None and self.google_refresh_token is not None
+        )

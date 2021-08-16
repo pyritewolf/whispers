@@ -23,7 +23,7 @@
     const params = new URLSearchParams();
     params.append("username", formData.userIdentifier);
     params.append("password", formData.password);
-    const response = await $api("/api/auth/signin", {
+    const response = await $api("/auth/signin", {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: params,
@@ -31,7 +31,6 @@
     if (response.status === APIStatus.error) return (formError = response.body);
     formError = null;
     user.set(response.body);
-    localStorage.setItem("user", JSON.stringify(response.body));
     window.location.replace(paths.HOME);
   };
 </script>

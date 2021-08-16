@@ -6,6 +6,7 @@
   import SignIn from "./views/SignIn.svelte";
   import Onboarding from "./views/Onboarding.svelte";
   import Register from "./views/Register.svelte";
+  import OauthCallback from "./views/OauthCallback.svelte";
 </script>
 
 <style>
@@ -41,6 +42,9 @@
     {#if $user}
       <Route path={paths.HOME}>
         <Home />
+      </Route>
+      <Route path={paths.OAUTH_GOOGLE_CALLBACK}>
+        <OauthCallback name="Youtube" />
       </Route>
     {:else}
       <Route path={paths.SIGN_IN} component={SignIn} />

@@ -13,6 +13,7 @@ class UserBase(BaseSchema):
 
 class UserOut(UserBase):
     id: int
+    has_youtube_auth: bool = False
 
 
 class UserAuthed(UserBase):
@@ -21,8 +22,11 @@ class UserAuthed(UserBase):
 
 
 class UserIn(UserBase):
+    id: int
     password: SecretStr
     recovery_token: Optional[str]
+    google_auth_token: str
+    google_refresh_token: str
 
 
 class UserUpdate(UserBase):

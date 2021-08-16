@@ -1,5 +1,7 @@
 from typing import Optional
+from urllib.parse import urlencode
 
+import requests
 import jwt
 from sqlalchemy.orm import Session
 from starlette.requests import Request
@@ -97,7 +99,9 @@ def handle_onboarding(db: Session, token: str) -> None:
     crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": None})
 
 
-def authenticate_user(db: Session, user_identifier: str, password: str) -> str:
+def authenticate_user(
+    db: Session, user_identifier: str, password: str
+) -> user_schemas.UserOut:
     user = crud.get_by(db, "email", user_identifier)
     if not user:
         user = crud.get_by(db, "username", user_identifier)
@@ -111,7 +115,7 @@ def authenticate_user(db: Session, user_identifier: str, password: str) -> str:
 
 async def get_token_contents(schema: BaseSchema, token: str = Depends(oauth2_scheme)):
     try:
-        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=["HS512"])
+        payload = jwt.decode(token, settings.JWT_KEY, algorithms=["HS512"])
         return schema.parse_obj(payload)
     except jwt.PyJWTError:
         return None
@@ -128,3 +132,35 @@ async def get_current_user(
     if user is None:
         raise CREDENTIALS_EXCEPTION
     return user_schemas.UserIn.from_orm(user)
+
+
+def auth_with_google(db: Session, user: user_schemas.UserIn, code: str):
+    auth_completion = {
+        "code": code,
+        "client_id": settings.GOOGLE_OAUTH_CLIENT,
+        "client_secret": settings.GOOGLE_OAUTH_SECRET,
+        "redirect_uri": f"{settings.CLIENT_URL}/oauth/google/callback",
+        "grant_type": "authorization_code",
+    }
+    response = requests.post(
+        "https://accounts.google.com/o/oauth2/token",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data=urlencode(auth_completion),
+    )
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=get_pydanticlike_error(
+                "oauth", "Something went wrong logging you into Google.",
+            ),
+        )
+    result = response.json()
+    token_data = {
+        "google_auth_token": result["access_token"],
+    }
+    if "refresh_token" in result:
+        token_data["google_refresh_token"] = result["refresh_token"]
+    db_user = crud.update(
+        db=db, db_obj=crud.get_by(db, "id", user.id), obj_in=token_data,
+    )
+    return user_schemas.UserOut.from_orm(db_user)

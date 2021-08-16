@@ -97,6 +97,10 @@ class Settings(BaseSettings):
     MAILGUN_DOMAIN: str
     MAILGUN_KEY: str
 
+    # youtube auth settings
+    GOOGLE_OAUTH_CLIENT: str
+    GOOGLE_OAUTH_SECRET: str
+
 
 class Config:
     case_sensitive = True

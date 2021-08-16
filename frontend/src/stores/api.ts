@@ -8,11 +8,10 @@ export default derived(user, ($user) => {
     path: string,
     options: any = { headers: {} }
   ): Promise<APIResponse | null> => {
-    let user = JSON.parse(localStorage.getItem("user"));
     const opts = { ...options };
-    if (user)
+    if ($user)
       opts.headers = {
-        Authorization: `Bearer ${user.token}`,
+        Authorization: `Bearer ${$user.token}`,
         ...options.headers,
       };
     if (opts.body)
@@ -20,16 +19,13 @@ export default derived(user, ($user) => {
         "Content-Type": "application/json",
         ...opts.headers,
       };
-    const response = await fetch(path, opts);
+    const response = await fetch(`/api${path}`, opts);
     const result = {
       status: APIStatus.ok,
       body: (await response.json()) || {},
     };
     if (response.status === 401) {
-      user.update(() => {
-        localStorage.removeItem("user");
-        return null;
-      });
+      user.set(null);
       window.location.replace(paths.SIGN_IN);
     }
     if (response.status < 200 || response.status >= 300)

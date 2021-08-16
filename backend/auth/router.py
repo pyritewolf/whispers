@@ -1,5 +1,7 @@
+from urllib.parse import urlencode
+
 from starlette.requests import Request
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, RedirectResponse
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -47,3 +49,29 @@ async def login(
         expires=settings.COOKIE_EXPIRATION_SECONDS,
     )
     return response
+
+
+@router.get("/google", response_class=RedirectResponse)
+def start_auth_with_google(
+    request: Request, user=Depends(controller.get_current_user),
+):
+    google_auth_params = {
+        "client_id": settings.GOOGLE_OAUTH_CLIENT,
+        "redirect_uri": f"{settings.CLIENT_URL}/oauth/google/callback",
+        "response_type": "code",
+        "scope": "https://www.googleapis.com/auth/youtube",
+        "access_type": "offline",
+        "login_hint": user.email,
+    }
+    return RedirectResponse(
+        url=f"https://accounts.google.com/o/oauth2/auth?{urlencode(google_auth_params)}"
+    )
+
+
+@router.post("/google/callback")
+def complete_auth_with_google(
+    data: Token,
+    user=Depends(controller.get_current_user),
+    db: Session = Depends(get_session),
+):
+    return controller.auth_with_google(db, user, data.token)

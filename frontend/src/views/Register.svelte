@@ -32,7 +32,7 @@
 
   const handleSubmit = async () => {
     current_status = status.LOADING;
-    const response = await $api("/api/auth/register", {
+    const response = await $api("/auth/register", {
       method: "POST",
       body: JSON.stringify(formData),
     });

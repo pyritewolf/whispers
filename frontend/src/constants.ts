@@ -4,4 +4,5 @@ export const paths = {
   REGISTER: "/register",
   ONBOARDING: "/onboarding",
   PASSWORD_RECOVERY: "/password_recovery",
+  OAUTH_GOOGLE_CALLBACK: "/oauth/google/callback",
 };
