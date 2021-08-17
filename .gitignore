@@ -1,6 +1,8 @@
 # Environment variables
 .env
 
+# Testing
+backend/htmlcov
 
 # Caches
 */**/__pycache__
