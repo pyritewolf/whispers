@@ -52,7 +52,7 @@ def patched_requests(monkeypatch, request):
         # create a mocked requests object
         mock = type("MockedReq", (), {})()
         # assign mocked json to requests.json
-        mock.json = response
+        mock.json = lambda _=None: response
         mock.status_code = status_code
         if status_code != 200:
             mock.error = "something went wrong!"

@@ -4,7 +4,7 @@ import pytest
 from sqlalchemy.orm import Session
 
 from users.models import User
-from tests.utils import seed_user
+from tests.utils import seed_user, get_auth_for
 
 
 def _get_register_data():
@@ -117,3 +117,67 @@ def test_onboarding(setup, db: Session):
     assert response.status_code == 200
     db.refresh(db_user)
     assert db_user.recovery_token is None
+
+
+def test_google_auth_invalid_token(setup, db):
+    seed_user(db)
+    response = setup.get("/api/auth/google", headers=get_auth_for())
+    assert response.status_code == 401
+
+
+def test_google_auth(setup, db):
+    db_user = seed_user(db)
+    response = setup.get(
+        "/api/auth/google", headers=get_auth_for(db_user), allow_redirects=False
+    )
+    assert response.status_code == 307
+
+
+def test_google_auth_callback_invalid_user_token(setup, db):
+    seed_user(db)
+    response = setup.post("/api/auth/google/callback", headers=get_auth_for())
+    assert response.status_code == 401
+
+
+@pytest.mark.parametrize(
+    "patched_requests",
+    [{"method": "post", "status_code": 401}],
+    indirect=["patched_requests"],
+)
+def test_google_auth_callback_invalid_google_token(setup, db, patched_requests):
+    db_user = seed_user(db)
+    response = setup.post(
+        "/api/auth/google/callback",
+        headers=get_auth_for(db_user),
+        json={"token": "whatever"},
+    )
+    print(response.json())
+    assert response.status_code == 500
+
+
+@pytest.mark.parametrize(
+    "patched_requests",
+    [
+        {
+            "method": "post",
+            "response": {
+                "access_token": "access",
+                "refresh_token": "refresh",
+                "expires_in": 1,
+                "token_type": "Bearer",
+            },
+        }
+    ],
+    indirect=["patched_requests"],
+)
+def test_google_auth_callback(setup, db, patched_requests):
+    db_user = seed_user(db)
+    response = setup.post(
+        "/api/auth/google/callback",
+        headers=get_auth_for(db_user),
+        json={"token": "whatever"},
+    )
+    db.refresh(db_user)
+    assert response.status_code == 200
+    assert db_user.google_auth_token == "access"
+    assert db_user.google_refresh_token == "refresh"

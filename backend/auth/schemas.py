@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import SecretStr, validator
 
 from schemas import BaseSchema
@@ -28,3 +30,10 @@ class Token(BaseSchema):
 
 class UserToken(BaseSchema):
     id: int
+
+
+class GoogleAuthTokens(BaseSchema):
+    access_token: str
+    token_type: str
+    expires_in: str
+    refresh_token: Optional[str] = None

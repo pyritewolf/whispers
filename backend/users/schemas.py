@@ -25,8 +25,9 @@ class UserIn(UserBase):
     id: int
     password: SecretStr
     recovery_token: Optional[str]
-    google_auth_token: str
-    google_refresh_token: str
+    has_youtube_auth: bool = False
+    google_auth_token: Optional[str]
+    google_refresh_token: Optional[str]
 
 
 class UserUpdate(UserBase):

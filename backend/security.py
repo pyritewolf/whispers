@@ -8,7 +8,9 @@ from config import settings
 
 
 def create_jwt_token(
-    to_encode: dict, expiration_in_seconds: int, algorithm="HS512"
+    to_encode: dict,
+    expiration_in_seconds: int = settings.COOKIE_EXPIRATION_SECONDS,
+    algorithm="HS512",
 ) -> str:
     expire = datetime.utcnow() + timedelta(seconds=int(expiration_in_seconds))
     to_encode.update({"exp": expire})

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict
 from urllib.parse import urlencode
 
 import requests
@@ -17,7 +17,7 @@ from security import create_jwt_token, verify_password
 from exceptions import CREDENTIALS_EXCEPTION, get_pydanticlike_error
 from mailing import MailingService
 from auth import schemas
-from users import schemas as user_schemas
+from users import schemas as user_schemas, models
 from users.controller import crud
 
 
@@ -134,33 +134,49 @@ async def get_current_user(
     return user_schemas.UserIn.from_orm(user)
 
 
-def auth_with_google(db: Session, user: user_schemas.UserIn, code: str):
-    auth_completion = {
-        "code": code,
-        "client_id": settings.GOOGLE_OAUTH_CLIENT,
-        "client_secret": settings.GOOGLE_OAUTH_SECRET,
-        "redirect_uri": f"{settings.CLIENT_URL}/oauth/google/callback",
-        "grant_type": "authorization_code",
-    }
+def _get_google_tokens(
+    db: Session, user: user_schemas.UserIn, request_args: Dict[str, str]
+) -> models.User:
+    request_args.update(
+        {
+            "client_id": settings.GOOGLE_OAUTH_CLIENT,
+            "client_secret": settings.GOOGLE_OAUTH_SECRET,
+        }
+    )
     response = requests.post(
         "https://accounts.google.com/o/oauth2/token",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
-        data=urlencode(auth_completion),
+        data=urlencode(request_args),
     )
     if response.status_code != 200:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=get_pydanticlike_error(
-                "oauth", "Something went wrong logging you into Google.",
+                "oauth", "Something went wrong while fetching your tokens from Google.",
             ),
         )
-    result = response.json()
+    tokens = schemas.GoogleAuthTokens.parse_obj(response.json())
     token_data = {
-        "google_auth_token": result["access_token"],
+        "google_auth_token": tokens.access_token,
+        "google_refresh_token": tokens.refresh_token,
     }
-    if "refresh_token" in result:
-        token_data["google_refresh_token"] = result["refresh_token"]
-    db_user = crud.update(
-        db=db, db_obj=crud.get_by(db, "id", user.id), obj_in=token_data,
-    )
+    return crud.update(db=db, db_obj=crud.get_by(db, "id", user.id), obj_in=token_data,)
+
+
+def auth_with_google(db: Session, user: user_schemas.UserIn, code: str):
+    auth_completion = {
+        "code": code,
+        "redirect_uri": f"{settings.CLIENT_URL}/oauth/google/callback",
+        "grant_type": "authorization_code",
+    }
+    db_user = _get_google_tokens(db, user, auth_completion)
     return user_schemas.UserOut.from_orm(db_user)
+
+
+def refresh_google_tokens(db: Session, user: user_schemas.UserIn):
+    auth_completion = {
+        "refresh_token": user.google_refresh_token,
+        "grant_type": "refresh_token",
+    }
+    db_user = _get_google_tokens(db, user, auth_completion)
+    return user_schemas.UserIn.from_orm(db_user)
