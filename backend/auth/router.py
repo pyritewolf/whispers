@@ -2,7 +2,7 @@ from urllib.parse import urlencode
 
 from starlette.requests import Request
 from starlette.responses import JSONResponse, RedirectResponse
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
@@ -10,7 +10,7 @@ from config import settings
 from db.session import get_session
 from security import create_jwt_token
 from auth.schemas import Register, Token
-from users.schemas import UserOut, UserAuthed
+from users.schemas import UserOut, UserAuthed, UserIn
 from auth import controller
 
 
@@ -32,7 +32,7 @@ async def onboard(data: Token, db: Session = Depends(get_session),) -> None:
 
 
 @router.post("/signin", response_model=UserAuthed)
-async def login(
+async def sign_in(
     request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_session),
@@ -50,6 +50,13 @@ async def login(
         httponly=True,
         expires=settings.COOKIE_EXPIRATION_SECONDS,
     )
+    return response
+
+
+@router.get("/signout")
+async def sign_out(current_user: UserIn = Depends(controller.get_current_user),):
+    response = JSONResponse({}, status_code=status.HTTP_200_OK)
+    response.delete_cookie("Authorization")
     return response
 
 
