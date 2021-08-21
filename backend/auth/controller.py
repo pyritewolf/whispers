@@ -66,17 +66,19 @@ class OAuth2PasswordBearerCookie(OAuth2):
 oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="api/auth/signin")
 
 
-def handle_register(db: Session, user: schemas.Register) -> user_schemas.UserOut:
-    db_user = crud.create(db=db, user=user)
+async def handle_register(db: Session, user: schemas.Register) -> user_schemas.UserOut:
+    new_user = await crud.create(db=db, user=user)
     token = create_jwt_token(
-        {"id": db_user.id}, settings.RESET_PASSWORD_EXPIRATION_SECONDS
+        {"id": new_user.id}, settings.RESET_PASSWORD_EXPIRATION_SECONDS
     )
     url = f"{settings.CLIENT_URL}/onboarding?token={token}"
-    db_user = crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": token})
+    new_user = user_schemas.UserOut.from_orm(
+        crud.update(db=db, db_obj=new_user, obj_in={"recovery_token": token})
+    )
     succesfully_sent = MailingService.get_instance().send(
         template="register.html.jinja2",
-        to=db_user.email,
-        variables={"url": url, "username": db_user.username},
+        to=new_user.email,
+        variables={"url": url, "username": new_user.username},
         subject="Welcome to Whispers!",
     )
     if not succesfully_sent:
@@ -86,11 +88,11 @@ def handle_register(db: Session, user: schemas.Register) -> user_schemas.UserOut
                 "user", "We couldn't send you your registration email. Try again?",
             ),
         )
-    return db_user
+    return new_user
 
 
-def handle_onboarding(db: Session, token: str) -> None:
-    db_user = crud.get_by(db, "recovery_token", token)
+async def handle_onboarding(db: Session, token: str) -> None:
+    db_user = await crud.get_by(db, "recovery_token", token)
     if not db_user:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -99,12 +101,12 @@ def handle_onboarding(db: Session, token: str) -> None:
     crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": None})
 
 
-def authenticate_user(
+async def authenticate_user(
     db: Session, user_identifier: str, password: str
 ) -> user_schemas.UserOut:
-    user = crud.get_by(db, "email", user_identifier)
+    user = await crud.get_by(db, "email", user_identifier)
     if not user:
-        user = crud.get_by(db, "username", user_identifier)
+        user = await crud.get_by(db, "username", user_identifier)
     if not user or not verify_password(password, user.password):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -128,13 +130,13 @@ async def get_current_user(
     token_data = await get_token_contents(schemas.UserToken, token=token)
     if token_data is None:
         raise CREDENTIALS_EXCEPTION
-    user = crud.get_by(db, "id", token_data.id)
+    user = await crud.get_by(db, "id", token_data.id)
     if user is None:
         raise CREDENTIALS_EXCEPTION
     return user_schemas.UserIn.from_orm(user)
 
 
-def _get_google_tokens(
+async def _get_google_tokens(
     db: Session, user: user_schemas.UserIn, request_args: Dict[str, str]
 ) -> models.User:
     request_args.update(
@@ -155,28 +157,35 @@ def _get_google_tokens(
                 "oauth", "Something went wrong while fetching your tokens from Google.",
             ),
         )
-    tokens = schemas.GoogleAuthTokens.parse_obj(response.json())
+    response_json = response.json()
+    tokens = schemas.GoogleAuthTokens.parse_obj(response_json)
     token_data = {
         "google_auth_token": tokens.access_token,
-        "google_refresh_token": tokens.refresh_token,
     }
-    return crud.update(db=db, db_obj=crud.get_by(db, "id", user.id), obj_in=token_data,)
+    if tokens.refresh_token:
+        token_data["google_refresh_token"] = tokens.refresh_token
+    user = await crud.get_by(db, "id", user.id)
+    return crud.update(db=db, db_obj=user, obj_in=token_data,)
 
 
-def auth_with_google(db: Session, user: user_schemas.UserIn, code: str):
+async def auth_with_google(
+    db: Session, user: user_schemas.UserIn, code: str
+) -> user_schemas.UserOut:
     auth_completion = {
         "code": code,
         "redirect_uri": f"{settings.CLIENT_URL}/oauth/google/callback",
         "grant_type": "authorization_code",
     }
-    db_user = _get_google_tokens(db, user, auth_completion)
+    db_user = await _get_google_tokens(db, user, auth_completion)
     return user_schemas.UserOut.from_orm(db_user)
 
 
-def refresh_google_tokens(db: Session, user: user_schemas.UserIn):
+async def refresh_google_tokens(
+    db: Session, user: user_schemas.UserIn
+) -> user_schemas.UserIn:
     auth_completion = {
         "refresh_token": user.google_refresh_token,
         "grant_type": "refresh_token",
     }
-    db_user = _get_google_tokens(db, user, auth_completion)
+    db_user = await _get_google_tokens(db, user, auth_completion)
     return user_schemas.UserIn.from_orm(db_user)

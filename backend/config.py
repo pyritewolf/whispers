@@ -19,6 +19,11 @@ client_url_by_env = {
     Environment.PRODUCTION: "https://whispers.pyritewolf.dev",
 }
 
+server_url_by_env = {
+    Environment.DEVELOPMENT: "localhost:8000",
+    Environment.PRODUCTION: "whispers.pyritewolf.dev",
+}
+
 
 class Settings(BaseSettings):
     ENVIRONMENT: Environment = Environment.DEVELOPMENT
@@ -27,6 +32,12 @@ class Settings(BaseSettings):
     @validator("CLIENT_URL", pre=True)
     def set_client_url(cls, v: Optional[str], values: Dict[str, Any]):
         return v or client_url_by_env[values["ENVIRONMENT"]]
+
+    SERVER_URL: Optional[str]
+
+    @validator("SERVER_URL", pre=True)
+    def set_server_url(cls, v: Optional[str], values: Dict[str, Any]):
+        return v or server_url_by_env[values["ENVIRONMENT"]]
 
     JWT_KEY: str
 

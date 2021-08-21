@@ -12,7 +12,7 @@ from security import get_hashed_password
 
 
 class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
-    def get_by(
+    async def get_by(
         self, db: Session, field: str, value: Union[str, int]
     ) -> Optional[models.User]:
         condition = getattr(models.User, field) == value
@@ -20,8 +20,8 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
             condition = func.lower(getattr(models.User, field)) == value.lower()
         return db.query(models.User).filter(condition).one_or_none()
 
-    def create(self, db: Session, user: auth_schemas.Register) -> schemas.UserOut:
-        pre_existing_user = self.get_by(db, "email", user.email)
+    async def create(self, db: Session, user: auth_schemas.Register) -> schemas.UserOut:
+        pre_existing_user = await self.get_by(db, "email", user.email)
         if pre_existing_user:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -29,7 +29,7 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
                     "email", "Yikes, that email is already in use",
                 ),
             )
-        pre_existing_user = self.get_by(db, "username", user.username)
+        pre_existing_user = await self.get_by(db, "username", user.username)
         if pre_existing_user:
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
@@ -45,7 +45,7 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        return db_user
+        return schemas.UserOut.from_orm(db_user)
 
 
 crud = CRUDUser(models.User)

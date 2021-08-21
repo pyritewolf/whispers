@@ -84,6 +84,32 @@ def test_register_with_wrong_pw(patched_requests, setup, db: Session):
 
 
 @pytest.mark.parametrize(
+    "patched_requests", [{"method": "post"}], indirect=["patched_requests"]
+)
+def test_register_with_used_email(patched_requests, setup, db: Session):
+    data = _get_register_data()
+    seed_user(db, {"email": data["email"]})
+    data["confirm_password"] = f'not-the-same-{data["password"]}'
+    response = setup.post("/api/auth/register", json=data)
+    assert response.status_code == 422
+    user = db.query(User).filter(User.email == data["email"]).one_or_none()
+    assert user.username != data["username"]
+
+
+@pytest.mark.parametrize(
+    "patched_requests", [{"method": "post"}], indirect=["patched_requests"]
+)
+def test_register_with_used_username(patched_requests, setup, db: Session):
+    data = _get_register_data()
+    seed_user(db, {"username": data["username"]})
+    data["confirm_password"] = f'not-the-same-{data["password"]}'
+    response = setup.post("/api/auth/register", json=data)
+    assert response.status_code == 422
+    user = db.query(User).filter(User.username == data["username"]).one_or_none()
+    assert user.email != data["email"]
+
+
+@pytest.mark.parametrize(
     "patched_requests",
     [{"method": "post", "status_code": 400}],
     indirect=["patched_requests"],

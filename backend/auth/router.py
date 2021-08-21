@@ -18,10 +18,10 @@ router = APIRouter()
 
 
 @router.post("/register", response_model=UserOut)
-def register(
+async def register(
     user: Register, db: Session = Depends(get_session),
 ):
-    return controller.handle_register(db=db, user=user)
+    await controller.handle_register(db=db, user=user)
 
 
 @router.post("/onboard")
@@ -37,7 +37,9 @@ async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_session),
 ):
-    user = controller.authenticate_user(db, form_data.username, form_data.password)
+    user = await controller.authenticate_user(
+        db, form_data.username, form_data.password
+    )
     token = create_jwt_token({"id": user.id}, settings.COOKIE_EXPIRATION_SECONDS)
     response = JSONResponse(
         {**user.dict(by_alias=True), "token": token}, status_code=200
@@ -68,10 +70,11 @@ def start_auth_with_google(
     )
 
 
-@router.post("/google/callback")
-def complete_auth_with_google(
+@router.post("/google/callback", response_model=UserOut)
+async def complete_auth_with_google(
     data: Token,
     user=Depends(controller.get_current_user),
     db: Session = Depends(get_session),
-):
-    return controller.auth_with_google(db, user, data.token)
+) -> UserOut:
+    db_user = await controller.auth_with_google(db, user, data.token)
+    return UserOut.from_orm(db_user)

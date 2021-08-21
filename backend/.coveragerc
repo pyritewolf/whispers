@@ -1,2 +1,2 @@
 [run]
-omit = db/versions/*,tests/*
+omit = db/versions/*,db/env.py,db/ensure_seed_data.py,db/init.py,tests/*

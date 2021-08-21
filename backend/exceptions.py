@@ -5,6 +5,7 @@ from fastapi import HTTPException, status
 class NotFoundException(HTTPException):
     def __init__(self, message: str):
         self.message = message
+        self.status_code = 400
 
 
 CREDENTIALS_EXCEPTION = HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
