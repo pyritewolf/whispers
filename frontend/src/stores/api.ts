@@ -28,9 +28,10 @@ export default derived(user, ($user) => {
       user.set(null);
       window.location.replace(paths.SIGN_IN);
     }
-    if (response.status < 200 || response.status >= 300)
+    if (response.status < 200 || response.status >= 300) {
       result.status = APIStatus.error;
-    if ("details" in result.body) result.body = result.body.details;
+      if ("detail" in result.body) result.body = result.body.detail;
+    }
     return result;
   };
   return method;
