@@ -150,9 +150,7 @@ def test_signout(setup, db: Session):
     response = setup.get("/api/auth/signout", headers=get_auth_for(db_user))
     assert response.status_code == 200
     assert "set-cookie" in response.headers
-    assert response.headers["set-cookie"].startswith(
-        'Authorization=""; '
-    ) and response.headers["set-cookie"].endswith("; Max-Age=0; Path=/")
+    assert response.headers["set-cookie"].startswith('Authorization=""; ')
 
 
 def test_google_auth_invalid_token(setup, db):

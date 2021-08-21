@@ -70,4 +70,4 @@ Most mandatory env variables for development can be simply copied from the sampl
   - `MAILGUN_KEY` and `MAILGUN_DOMAIN`: These are two basic keys you can get in [Mailgun](https://app.mailgun.com/app/dashboard).
   - `EMAILS_FROM_NAME` and `EMAILS_FROM_ADDRESS`: The name and email address that will be associated with any emails sent out. The address must be in the same domain as `MAILGUN_DOMAIN`.
 - **Youtube integration variables**
-  - `GOOGLE_OAUTH_CLIENT` and `GOOGLE_OAUTH_SECRET`: You can get these by creating an app in the [Google Developer console](https://console.cloud.google.com/), in the Credentials section. Make sure to enable the Youtube API in the Library, and to set up `{your dev domain}/oauth/google/callback` as a redirect URI. More  on this [here](https://developers.google.com/youtube/v3/live/guides/auth/server-side-web-apps).
+  - `GOOGLE_OAUTH_CLIENT` and `GOOGLE_OAUTH_SECRET`: Check [this guide](GOOGLE.md) for more info on how to set these up.
