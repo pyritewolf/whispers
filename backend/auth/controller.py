@@ -67,13 +67,13 @@ oauth2_scheme = OAuth2PasswordBearerCookie(tokenUrl="api/auth/signin")
 
 
 async def handle_register(db: Session, user: schemas.Register) -> user_schemas.UserOut:
-    new_user = await crud.create(db=db, user=user)
+    db_user = await crud.create(db=db, user=user)
     token = create_jwt_token(
-        {"id": new_user.id}, settings.RESET_PASSWORD_EXPIRATION_SECONDS
+        {"id": db_user.id}, settings.RESET_PASSWORD_EXPIRATION_SECONDS
     )
     url = f"{settings.CLIENT_URL}/onboarding?token={token}"
     new_user = user_schemas.UserOut.from_orm(
-        crud.update(db=db, db_obj=new_user, obj_in={"recovery_token": token})
+        crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": token})
     )
     succesfully_sent = MailingService.get_instance().send(
         template="register.html.jinja2",

@@ -21,14 +21,14 @@ router = APIRouter()
 async def register(
     user: Register, db: Session = Depends(get_session),
 ):
-    await controller.handle_register(db=db, user=user)
+    new_user = await controller.handle_register(db=db, user=user)
+    return new_user
 
 
 @router.post("/onboard")
-def onboard(
-    data: Token, db: Session = Depends(get_session),
-):
-    return controller.handle_onboarding(db=db, token=data.token)
+async def onboard(data: Token, db: Session = Depends(get_session),) -> None:
+    await controller.handle_onboarding(db=db, token=data.token)
+    return None
 
 
 @router.post("/signin", response_model=UserAuthed)

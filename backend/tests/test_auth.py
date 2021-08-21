@@ -60,13 +60,12 @@ def test_login_with_username(setup, db: Session):
     assert response.status_code == 200
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "patched_requests", [{"method": "post"}], indirect=["patched_requests"]
 )
-async def test_register(patched_requests, setup, db: Session):
+def test_register(patched_requests, setup, db: Session):
     data = _get_register_data()
-    response = await setup.post("/api/auth/register", json=data)
+    response = setup.post("/api/auth/register", json=data)
     assert response.status_code == 200
     user = db.query(User).filter(User.email == data["email"]).one_or_none()
     assert user is not None
@@ -110,15 +109,14 @@ def test_register_with_used_username(patched_requests, setup, db: Session):
     assert user.email != data["email"]
 
 
-@pytest.mark.asyncio
 @pytest.mark.parametrize(
     "patched_requests",
     [{"method": "post", "status_code": 400}],
     indirect=["patched_requests"],
 )
-async def test_register_with_failing_email(patched_requests, setup, db: Session):
+def test_register_with_failing_email(patched_requests, setup, db: Session):
     data = _get_register_data()
-    response = await setup.post("/api/auth/register", json=data)
+    response = setup.post("/api/auth/register", json=data)
     assert response.status_code == 500
     user = db.query(User).filter(User.email == data["email"]).one_or_none()
     assert user is not None
@@ -131,19 +129,17 @@ def test_onboarding_no_token(setup, db: Session):
     assert response.status_code == 422
 
 
-@pytest.mark.asyncio
-async def test_onboarding_wrong_token(setup, db: Session):
+def test_onboarding_wrong_token(setup, db: Session):
     seed_user(db, {"recovery_token": "original_token"})
-    response = await setup.post("/api/auth/onboard", json={"token": "weird_token"},)
+    response = setup.post("/api/auth/onboard", json={"token": "weird_token"},)
     assert response.status_code == 422
 
 
-@pytest.mark.asyncio
-async def test_onboarding(setup, db: Session):
+def test_onboarding(setup, db: Session):
     token = "safe-token"
     db_user = seed_user(db, {"recovery_token": token})
     assert db_user.recovery_token == token
-    response = await setup.post("/api/auth/onboard", json={"token": token})
+    response = setup.post("/api/auth/onboard", json={"token": token})
     assert response.status_code == 200
     db.refresh(db_user)
     assert db_user.recovery_token is None

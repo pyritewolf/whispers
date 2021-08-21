@@ -20,7 +20,7 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
             condition = func.lower(getattr(models.User, field)) == value.lower()
         return db.query(models.User).filter(condition).one_or_none()
 
-    async def create(self, db: Session, user: auth_schemas.Register) -> schemas.UserOut:
+    async def create(self, db: Session, user: auth_schemas.Register) -> models.User:
         pre_existing_user = await self.get_by(db, "email", user.email)
         if pre_existing_user:
             raise HTTPException(
@@ -45,7 +45,7 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
         db.add(db_user)
         db.commit()
         db.refresh(db_user)
-        return schemas.UserOut.from_orm(db_user)
+        return db_user
 
 
 crud = CRUDUser(models.User)
