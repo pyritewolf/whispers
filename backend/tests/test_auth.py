@@ -145,6 +145,16 @@ def test_onboarding(setup, db: Session):
     assert db_user.recovery_token is None
 
 
+def test_signout(setup, db: Session):
+    db_user = seed_user(db)
+    response = setup.get("/api/auth/signout", headers=get_auth_for(db_user))
+    assert response.status_code == 200
+    assert "set-cookie" in response.headers
+    assert response.headers["set-cookie"].startswith(
+        'Authorization=""; '
+    ) and response.headers["set-cookie"].endswith("; Max-Age=0; Path=/")
+
+
 def test_google_auth_invalid_token(setup, db):
     seed_user(db)
     response = setup.get("/api/auth/google", headers=get_auth_for())
