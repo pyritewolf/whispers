@@ -20,7 +20,7 @@ echo "$COLOR_LIGHT_BLUE ✨ Pre-commit is ready to rumble! $COLOR_REST"
 
 # create database
 echo "$COLOR_LIGHT_BLUE 🧑‍🔧 Ensuring DB exists... $COLOR_REST"
-docker-compose run --rm api python3 db/init.py
+docker-compose run --rm api python3 db/init.py $@
 echo "$COLOR_LIGHT_BLUE ✨ DB ${POSTGRES_DB} is set up! $COLOR_REST"
 
 # install dependencies
