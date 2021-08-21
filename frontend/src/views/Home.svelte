@@ -16,10 +16,38 @@
   });
 </script>
 
-<Button
-  type={ButtonType.button}
-  color={youtubeColor}
-  click={() => window.location.replace('/api/auth/google')}>
-  <Icon name={BrandIcon.youtube} />
-  {youtubeText}
-</Button>
+<style>
+  .root {
+    display: flex;
+    gap: var(--gap-lg);
+  }
+
+  section {
+    width: 100%;
+  }
+
+  aside {
+    width: 45rem;
+  }
+</style>
+
+<div class="root">
+  <section>
+    <h1>Get ready to stream</h1>
+    <Button
+      click={() => {
+        $api('/live/streams');
+      }}>
+      Click for fun!
+    </Button>
+  </section>
+  <aside>
+    <Button
+      type={ButtonType.button}
+      color={youtubeColor}
+      click={() => window.location.replace('/api/auth/google')}>
+      <Icon name={BrandIcon.youtube} />
+      {youtubeText}
+    </Button>
+  </aside>
+</div>
