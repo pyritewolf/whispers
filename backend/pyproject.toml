@@ -16,6 +16,7 @@ pydantic = {extras = ["email"], version = "^1.7.3"}
 requests = "^2.25.1"
 bcrypt = "^3.2.0"
 python-multipart = "^0.0.5"
+pytest-asyncio = "^0.15.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.1.2"
