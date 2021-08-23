@@ -56,7 +56,7 @@
       <p>Yey! You're good to go.</p>
       <p>
         <Link to={paths.SIGN_IN}>
-          <Button color={Color.primary}>Log in!</Button>
+          <Button color={Color.primary}>Sign in!</Button>
         </Link>
       </p>
     {:else}

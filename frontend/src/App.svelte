@@ -2,11 +2,15 @@
   import { Router, Link, Route } from "svelte-navigator";
   import { paths } from "./constants";
   import { user } from "./stores";
-  import Home from "./views/Home.svelte";
-  import SignIn from "./views/SignIn.svelte";
-  import Onboarding from "./views/Onboarding.svelte";
-  import Register from "./views/Register.svelte";
-  import OauthCallback from "./views/OauthCallback.svelte";
+  import {
+    Home,
+    OauthCallback,
+    SignIn,
+    PasswordRecovery,
+    Onboarding,
+    Register,
+    SetNewPassword,
+  } from "./views";
 </script>
 
 <style>
@@ -47,6 +51,8 @@
         <OauthCallback name="Youtube" />
       </Route>
     {:else}
+      <Route path={paths.NEW_PASSWORD} component={SetNewPassword} />
+      <Route path={paths.PASSWORD_RECOVERY} component={PasswordRecovery} />
       <Route path={paths.SIGN_IN} component={SignIn} />
       <Route path={paths.REGISTER} component={Register} />
       <Route path={paths.ONBOARDING} component={Onboarding} />

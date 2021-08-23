@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 from config import settings
 from db.session import get_session
 from security import create_jwt_token
-from auth.schemas import Register, Token
+from auth.schemas import Register, Token, PasswordRecovery, NewPassword
 from users.schemas import UserOut, UserAuthed, UserIn
 from auth import controller
 
@@ -51,6 +51,20 @@ async def sign_in(
         expires=settings.COOKIE_EXPIRATION_SECONDS,
     )
     return response
+
+
+@router.post("/password_recovery")
+async def password_recovery(
+    data: PasswordRecovery, db: Session = Depends(get_session),
+) -> None:
+    await controller.handle_password_recovery(db=db, email=data.email)
+    return None
+
+
+@router.post("/new_password")
+async def new_password(data: NewPassword, db: Session = Depends(get_session),) -> None:
+    await controller.handle_set_new_password(db=db, data=data)
+    return None
 
 
 @router.get("/signout")

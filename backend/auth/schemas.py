@@ -28,6 +28,21 @@ class Token(BaseSchema):
         return v
 
 
+class PasswordRecovery(BaseSchema):
+    email: str
+
+
+class NewPassword(Token):
+    password: SecretStr
+    confirm_password: SecretStr
+
+    @validator("confirm_password")
+    def check_if_passwords_match(cls, v, values):
+        if v != values["password"]:
+            raise ValueError("Passwords don't match, buddy!")
+        return v
+
+
 class UserToken(BaseSchema):
     id: int
 

@@ -13,7 +13,7 @@ from fastapi.security import OAuth2
 from config import settings
 from schemas import BaseSchema
 from db.session import get_session
-from security import create_jwt_token, verify_password
+from security import create_jwt_token, verify_password, get_hashed_password
 from exceptions import CREDENTIALS_EXCEPTION, get_pydanticlike_error
 from mailing import MailingService
 from auth import schemas
@@ -99,6 +99,57 @@ async def handle_onboarding(db: Session, token: str) -> None:
             detail=get_pydanticlike_error("token", "This link is invalid!",),
         )
     crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": None})
+
+
+async def handle_password_recovery(db: Session, email: str) -> None:
+    db_user = await crud.get_by(db, "email", email)
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=get_pydanticlike_error(
+                "email", "Oops! Something went wrong. Try again?"
+            ),
+        )
+    token = create_jwt_token(
+        {"id": db_user.id}, settings.RESET_PASSWORD_EXPIRATION_SECONDS
+    )
+    crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": token})
+    new_password_url = f"{settings.CLIENT_URL}/new_password?token={token}"
+    password_recovery_url = f"{settings.CLIENT_URL}/password_recovery"
+    succesfully_sent = MailingService.get_instance().send(
+        template="password_recovery.html.jinja2",
+        to=db_user.email,
+        variables={
+            "new_password_url": new_password_url,
+            "username": db_user.username,
+            "password_recovery_url": password_recovery_url,
+        },
+        subject="Forgot your password? 😱",
+    )
+    if not succesfully_sent:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=get_pydanticlike_error(
+                "email", "Oops! Something went wrong. Try again?"
+            ),
+        )
+    return None
+
+
+async def handle_set_new_password(db: Session, data: schemas.NewPassword) -> None:
+    db_user = await crud.get_by(db, "recovery_token", data.token)
+    if not db_user:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=get_pydanticlike_error(
+                "password", "This link is invalid! Restart the password recovery",
+            ),
+        )
+    db_user.password = get_hashed_password(data.password)
+    db_user.recovery_token = None
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
 
 
 async def authenticate_user(

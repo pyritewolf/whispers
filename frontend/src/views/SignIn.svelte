@@ -67,6 +67,6 @@
       bind:value={formData.password}
       error={getErrorFor('auth', formError)}
       name="password" />
-    <Button color={Color.primary}>Log in!</Button>
+    <Button color={Color.primary}>Sign in!</Button>
   </form>
 </AuthLayout>
