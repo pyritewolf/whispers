@@ -5,3 +5,4 @@ export { default as PasswordRecovery } from "./PasswordRecovery.svelte";
 export { default as Register } from "./Register.svelte";
 export { default as SignIn } from "./SignIn.svelte";
 export { default as SetNewPassword } from "./SetNewPassword.svelte";
+export { default as Chat } from "./Chat.svelte";

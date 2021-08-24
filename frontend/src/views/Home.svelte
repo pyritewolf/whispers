@@ -33,13 +33,7 @@
 
 <div class="root">
   <section>
-    <h1>Get ready to stream</h1>
-    <Button
-      click={() => {
-        $api('/live/streams');
-      }}>
-      Click for fun!
-    </Button>
+    <h1>Your chat</h1>
   </section>
   <aside>
     <Button

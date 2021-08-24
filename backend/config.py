@@ -112,6 +112,9 @@ class Settings(BaseSettings):
     GOOGLE_OAUTH_CLIENT: str
     GOOGLE_OAUTH_SECRET: str
 
+    # chat settings
+    CHAT_POLLING_TIME: int = 5
+
 
 class Config:
     case_sensitive = True

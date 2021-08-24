@@ -6,4 +6,5 @@ export const paths = {
   PASSWORD_RECOVERY: "/password_recovery",
   NEW_PASSWORD: "/new_password",
   OAUTH_GOOGLE_CALLBACK: "/oauth/google/callback",
+  CHAT: "/chat",
 };

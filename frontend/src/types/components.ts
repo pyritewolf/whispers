@@ -1,4 +1,4 @@
-import type { User } from "./entities";
+import type { ChatConfig, User } from "./entities";
 
 export enum InputType {
   text = "text",
@@ -23,6 +23,7 @@ export enum NormalIcon {
   newspaper = "newspaper",
   thumbs_up = "thumbs-up",
   skull_crossbones = "skull-crossbones",
+  comments = "comments",
 }
 
 export enum BrandIcon {
@@ -61,7 +62,7 @@ export enum APIStatus {
 
 export type APIResponse = {
   status: APIStatus;
-  body: Array<APIError> | User;
+  body: Array<APIError> | User | ChatConfig | string;
 };
 
 export type APIError = {
@@ -71,6 +72,7 @@ export type APIError = {
 
 export const getErrorFor = (key: string, errors: Array<APIError> | null) => {
   if (!errors) return;
+  console.log(errors);
   const error = errors.find((e) => e.loc.includes(key));
   if (!error) return null;
   return error.msg;

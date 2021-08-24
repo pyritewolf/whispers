@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Router, Link, Route } from "svelte-navigator";
   import { paths } from "./constants";
-  import { user } from "./stores";
+  import { api, user } from "./stores";
   import {
     Home,
     OauthCallback,
@@ -10,7 +10,14 @@
     Onboarding,
     Register,
     SetNewPassword,
+    Chat,
   } from "./views";
+
+  const signOut = async () => {
+    await $api("/auth/signout");
+    user.set(null);
+    window.location.replace(paths.SIGN_IN);
+  };
 </script>
 
 <style>
@@ -28,6 +35,16 @@
   nav {
     text-transform: uppercase;
   }
+
+  nav span {
+    color: var(--primary);
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  nav span:hover {
+    text-decoration: underline;
+  }
 </style>
 
 <Router>
@@ -36,6 +53,7 @@
     <nav>
       {#if $user}
         <Link to={paths.HOME}>Home</Link>
+        <span on:click={signOut}>Sign out</span>
       {:else}
         <Link to={paths.SIGN_IN}>Sign in</Link>
         <Link to={paths.REGISTER}>Register</Link>
@@ -51,11 +69,12 @@
         <OauthCallback name="Youtube" />
       </Route>
     {:else}
-      <Route path={paths.NEW_PASSWORD} component={SetNewPassword} />
-      <Route path={paths.PASSWORD_RECOVERY} component={PasswordRecovery} />
-      <Route path={paths.SIGN_IN} component={SignIn} />
       <Route path={paths.REGISTER} component={Register} />
-      <Route path={paths.ONBOARDING} component={Onboarding} />
     {/if}
+    <Route path={paths.PASSWORD_RECOVERY} component={PasswordRecovery} />
+    <Route path={paths.NEW_PASSWORD} component={SetNewPassword} />
+    <Route path={paths.SIGN_IN} component={SignIn} />
+    <Route path={paths.ONBOARDING} component={Onboarding} />
+    <Route path={`${paths.CHAT}/:streamer`} component={Chat} />
   </main>
 </Router>

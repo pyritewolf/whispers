@@ -1,14 +1,17 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, WebSocket
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
-
 from starlette.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.orm import Session
 
 import router
+from websocket import ConnectionManager
 from config import settings
 from exceptions import NotFoundException
+from db.session import get_session
+from live import controller as live_controller
 
 
 async def homepage(request, exec):
@@ -17,9 +20,7 @@ async def homepage(request, exec):
     return templates.TemplateResponse(template, context)
 
 
-app = FastAPI(
-    exception_handlers={404: homepage}
-)
+app = FastAPI(exception_handlers={404: homepage})
 
 templates = Jinja2Templates(directory="templates")
 
@@ -44,3 +45,16 @@ async def not_found_exception_handler(
     request: Request, exc: NotFoundException,
 ):
     return JSONResponse(status_code=404, content={"detail": exc.message},)
+
+
+manager = ConnectionManager()
+
+
+@app.websocket("/api/live/chat/{streamer}")
+async def livechat_websocket(
+    websocket: WebSocket,
+    streamer: str,
+    youtube_chat_id: str,
+    db: Session = Depends(get_session),
+):
+    await live_controller.handle_chat(manager, websocket, db, youtube_chat_id, streamer)
