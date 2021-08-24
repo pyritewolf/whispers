@@ -1,10 +1,10 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { api } from "../stores";
   import Button from "../components/Button.svelte";
   import Icon from "../components/Icon.svelte";
   import { ButtonType, BrandIcon, Color } from "../types/components";
   import { user } from "../stores";
+  import Chat from "./Chat.svelte";
 
   let youtubeColor: Color = Color.youtube;
   let youtubeText: string = "Link your Youtube account";
@@ -26,6 +26,12 @@
     width: 100%;
   }
 
+  .chat {
+    background-color: var(--dark-gray);
+    border-radius: var(--radius);
+    margin-top: var(--gap-md);
+  }
+
   aside {
     width: 45rem;
   }
@@ -34,6 +40,13 @@
 <div class="root">
   <section>
     <h1>Your chat</h1>
+    <div class="chat">
+      <Chat
+        maxHeight="30rem"
+        withLayout={false}
+        withInput={false}
+        streamer={$user.username} />
+    </div>
   </section>
   <aside>
     <Button

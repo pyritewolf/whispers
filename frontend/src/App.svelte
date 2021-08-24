@@ -68,6 +68,9 @@
       <Route path={paths.OAUTH_GOOGLE_CALLBACK}>
         <OauthCallback name="Youtube" />
       </Route>
+      <Route path={`${paths.CHAT}`}>
+        <Chat streamer={$user.username} />
+      </Route>
     {:else}
       <Route path={paths.REGISTER} component={Register} />
     {/if}
@@ -75,6 +78,6 @@
     <Route path={paths.NEW_PASSWORD} component={SetNewPassword} />
     <Route path={paths.SIGN_IN} component={SignIn} />
     <Route path={paths.ONBOARDING} component={Onboarding} />
-    <Route path={`${paths.CHAT}/:streamer`} component={Chat} />
+    <!-- <Route path={`${paths.CHAT}/:streamer`} component={Chat} /> -->
   </main>
 </Router>
