@@ -114,6 +114,10 @@ class Settings(BaseSettings):
 
     # chat settings
     CHAT_POLLING_TIME: int = 5
+    
+    # twitch auth settings
+    TWITCH_OAUTH_CLIENT: str
+    TWITCH_OAUTH_SECRET: str
 
 
 class Config:
