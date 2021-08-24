@@ -41,11 +41,15 @@
   <section>
     <h1>Your chat</h1>
     <div class="chat">
-      <Chat
-        maxHeight="30rem"
-        withLayout={false}
-        withInput={false}
-        streamer={$user.username} />
+      {#if $user.hasYoutubeAuth}
+        <Chat
+          maxHeight="30rem"
+          withLayout={false}
+          withInput={false}
+          streamer={$user.username} />
+      {:else}
+        <p>Your account isn't linked to Youtube!</p>
+      {/if}
     </div>
   </section>
   <aside>
