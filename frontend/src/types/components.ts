@@ -53,6 +53,7 @@ export enum Color {
   white = "--white",
   transparent = "--transparent",
   youtube = "--youtube",
+  twitch = "--twitch",
 }
 
 export enum APIStatus {

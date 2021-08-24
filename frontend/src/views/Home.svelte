@@ -8,6 +8,8 @@
 
   let youtubeColor: Color = Color.youtube;
   let youtubeText: string = "Link your Youtube account";
+  let twitchColor: Color = Color.twitch;
+  let twitchText: string = "Link your Twitch account";
 
   onMount(() => {
     if (!$user.hasYoutubeAuth) return;
@@ -59,6 +61,13 @@
       click={() => window.location.replace('/api/auth/google')}>
       <Icon name={BrandIcon.youtube} />
       {youtubeText}
+    </Button>
+    <Button
+      type={ButtonType.button}
+      color={twitchColor}
+      click={() => window.location.replace('/api/auth/google')}>
+      <Icon name={BrandIcon.twitch} />
+      {twitchText}
     </Button>
   </aside>
 </div>
