@@ -15,9 +15,10 @@
   button {
     background-color: var(--color);
     border-radius: var(--radius);
-    padding: var(--gap-md);
+    padding: var(--gap-sm);
     color: var(--text-color);
     width: 100%;
+    height: fit-content;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -27,6 +28,7 @@
     cursor: pointer;
     text-transform: uppercase;
     transition: var(--transition);
+    border: 1px solid var(--transparent);
   }
 
   button:hover,

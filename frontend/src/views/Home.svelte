@@ -2,9 +2,11 @@
   import { onMount } from "svelte";
   import Button from "../components/Button.svelte";
   import Icon from "../components/Icon.svelte";
-  import { ButtonType, BrandIcon, Color } from "../types/components";
+  import { ButtonType, BrandIcon, Color, Size } from "../types/components";
   import { user } from "../stores";
+  import { copyToClipboard } from "../utils";
   import Chat from "./Chat.svelte";
+  import Input from "../components/Input.svelte";
 
   let youtubeColor: Color = Color.youtube;
   let youtubeText: string = "Link your Youtube account";
@@ -14,7 +16,7 @@
   onMount(() => {
     if (!$user.hasYoutubeAuth) return;
     youtubeColor = Color.gray;
-    youtubeText = "Your Youtube account is linked (click to re-link)";
+    youtubeText = "Click to refresh your Youtube auth";
   });
 </script>
 
@@ -32,10 +34,28 @@
     background-color: var(--dark-gray);
     border-radius: var(--radius);
     margin-top: var(--gap-md);
+    padding: var(--gap-md);
+  }
+
+  .chat .col {
+    display: flex;
+    gap: var(--gap-md);
+    align-items: center;
+  }
+
+  .chat .col > :global(*:first-child) {
+    flex-grow: 1;
+  }
+
+  .chat .col > :global(*:last-child) {
+    width: 15rem;
   }
 
   aside {
     width: 45rem;
+    display: flex;
+    gap: var(--gap-md);
+    flex-direction: column;
   }
 </style>
 
@@ -44,6 +64,15 @@
     <h1>Your chat</h1>
     <div class="chat">
       {#if $user.hasYoutubeAuth}
+        <div class="col">
+          <Input
+            label="OBS Embed Link"
+            help="Click to copy your embed link"
+            value={$user.chatEmbedSecret || 'banana'}
+            readonly={true}
+            click={() => copyToClipboard($user.chatEmbedSecret)} />
+          <Button>Get new link</Button>
+        </div>
         <Chat
           maxHeight="30rem"
           withLayout={false}

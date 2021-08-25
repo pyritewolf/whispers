@@ -20,6 +20,7 @@ class User(BaseModel):
     role = Column(DBEnum(Role), default=Role.user, nullable=False)
     username = Column(String, nullable=False, unique=True)
     recovery_token = Column(String)
+    # chat_embed_secret = Column(String)
     google_auth_token = Column(String)
     google_refresh_token = Column(String)
 

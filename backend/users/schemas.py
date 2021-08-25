@@ -19,6 +19,7 @@ class UserOut(UserBase):
 class UserAuthed(UserBase):
     id: int
     token: str
+    chat_embed_secret: Optional[str] = None
 
 
 class UserIn(UserBase):

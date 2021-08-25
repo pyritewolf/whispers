@@ -4,6 +4,7 @@ export type User = {
   username: string;
   token: string;
   hasYoutubeAuth: boolean;
+  chatEmbedSecret: string | null;
 };
 
 export type ChatConfig = {
