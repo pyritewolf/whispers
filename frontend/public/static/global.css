@@ -14,14 +14,12 @@ html, body {
 	--dark-gray: #333;
 	--gray: #4f4f4f;
 	--lighter-gray: #aaa;
-	/* --primary: #368B85;
-	--secondary: #B4B897; */
-	--light-secondary: #f4edfc;
-	--secondary: #e6d7f7;
-	--dark-secondary: #8c5ac4;
-	--light-primary: #e0fcff;
-	--primary: #bee8ed;
-	--dark-primary: #53aab5;
+	--lighter-secondary: #f4edfc;
+	--light-secondary: #e6d7f7;
+	--secondary: #8c5ac4;
+	--lighter-primary: #e0fcff;
+	--light-primary: #bee8ed;
+	--primary: #53aab5;
 	--error: indianred;
 	--white: white;
 	--transparent: transparent;

@@ -35,12 +35,12 @@
   }
 
   header h1::first-letter {
-    text-shadow: -0.8rem 0 0 var(--dark-primary);
+    text-shadow: -0.8rem 0 0 var(--primary);
     transition: var(--transition);
   }
 
   header h1:hover::first-letter {
-    text-shadow: -0.8rem 0 0 var(--dark-secondary);
+    text-shadow: -0.8rem 0 0 var(--secondary);
     transition: var(--transition);
   }
 
