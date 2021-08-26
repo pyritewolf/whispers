@@ -28,6 +28,22 @@
     padding: var(--gap-md) var(--gap-lg);
   }
 
+  header :global(.logo) {
+    color: var(--white);
+    text-decoration: none !important;
+    transition: var(--transition);
+  }
+
+  header h1::first-letter {
+    text-shadow: -0.8rem 0 0 var(--dark-primary);
+    transition: var(--transition);
+  }
+
+  header h1:hover::first-letter {
+    text-shadow: -0.8rem 0 0 var(--dark-secondary);
+    transition: var(--transition);
+  }
+
   main {
     padding: var(--gap-lg);
   }
@@ -49,7 +65,9 @@
 
 <Router>
   <header>
-    <h1>whispers</h1>
+    <Link class="logo" to={paths.HOME}>
+      <h1>whispers</h1>
+    </Link>
     <nav>
       {#if $user}
         <Link to={paths.HOME}>Home</Link>
