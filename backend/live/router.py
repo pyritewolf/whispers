@@ -12,14 +12,6 @@ from users.controller import schemas as user_schemas
 router = APIRouter()
 
 
-@router.get("/streams")
-async def list_streams(
-    user=Depends(get_current_user), db: Session = Depends(get_session),
-):
-    streams = await controller.handle_find_streams(db=db, user=user)
-    return streams
-
-
 @router.get("/is_chat_open")
 async def check_if_chat_is_available(
     streamer: user_schemas.UserIn = Depends(get_current_user),

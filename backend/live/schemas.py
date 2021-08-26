@@ -40,7 +40,7 @@ class YoutubeBroadcastSnippet(BaseSchema):
     channel_id: str
     description: str
     is_default_broadcast: bool
-    live_chat_id: Optional[str]
+    live_chat_id: Optional[str] = None
     published_at: datetime
     scheduled_start_time: datetime
     thumbnails: YoutubeThumbnailSet

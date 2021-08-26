@@ -29,6 +29,8 @@ async def _request_to_google(
     if response.status_code == 401:
         user = await refresh_google_tokens(db, user)
         response = getattr(requests, method)(**request_args)
+    if response.status_code != 200:
+        logging.warning(f"Fetch to google failed, body was {response.json()}")
     return response
 
 
@@ -49,8 +51,7 @@ async def handle_find_streams(
                 "streams", "Something went wrong getting your Youtube streams."
             ),
         )
-    result = response.json()
-    result = schemas.YoutubeBroadcastResponse.parse_obj(result)
+    result = schemas.YoutubeBroadcastResponse.parse_obj(response.json())
     return result.items
 
 
