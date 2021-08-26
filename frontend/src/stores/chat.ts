@@ -9,9 +9,9 @@ const sendMessage = (message, socket) => {
   }
 };
 
-const setUpSocket = (configs: ChatConfig, streamer: string) => {
+const setUpSocket = (configs: ChatConfig, token: string) => {
   let socket = new WebSocket(
-    `ws://${configs.serverUrl}/api/live/chat/${streamer}?youtube_chat_id=${configs.youtubeChatId}`
+    `ws://${configs.serverUrl}/api/live/chat/${token}?youtube_chat_id=${configs.youtubeChatId}`
   );
 
   // Connection opened

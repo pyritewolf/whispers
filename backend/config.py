@@ -111,10 +111,11 @@ class Settings(BaseSettings):
     # youtube auth settings
     GOOGLE_OAUTH_CLIENT: str
     GOOGLE_OAUTH_SECRET: str
+    GOOGLE_API_KEY: str
 
     # chat settings
     CHAT_POLLING_TIME: int = 5
-    
+
     # twitch auth settings
     TWITCH_OAUTH_CLIENT: str
     TWITCH_OAUTH_SECRET: str

@@ -43,7 +43,7 @@ def patched_requests(monkeypatch, request):
     response: Dict[str, Any] = request.param.get("response", {})
     status_code: int = request.param.get("status_code", 200)
 
-    def mocked_method(uri: str = "http://google.com", **kwargs):
+    def mocked_method(url: str = "http://google.com", **kwargs):
         """A method replacing requests[method]
         Returns either a mocked response object (with json method)
         or the default response object if the uri doesn't match
@@ -53,8 +53,8 @@ def patched_requests(monkeypatch, request):
         mock = type("MockedReq", (), {})()
         # assign mocked json to requests.json
         result = response
-        if uri in response:
-            result = response[uri]
+        if url in response:
+            result = response[url]
         mock.json = lambda _=None: result
         mock.status_code = status_code
         if status_code != 200:

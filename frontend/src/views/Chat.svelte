@@ -84,17 +84,21 @@
       <div class="chat">
         <ChatMessages />
       </div>
-      <form autocomplete="off" on:submit|preventDefault={handleSubmit}>
-        <div class="input">
-          <Input
-            name="send-message"
-            placeholder="nice move!"
-            bind:value={newMessage} />
-        </div>
-        <div class="button">
-          <Button color={newMessage ? Color.primary : Color.gray}>Send</Button>
-        </div>
-      </form>
+      {#if withInput}
+        <form autocomplete="off" on:submit|preventDefault={handleSubmit}>
+          <div class="input">
+            <Input
+              name="send-message"
+              placeholder="nice move!"
+              bind:value={newMessage} />
+          </div>
+          <div class="button">
+            <Button color={newMessage ? Color.primary : Color.gray}>
+              Send
+            </Button>
+          </div>
+        </form>
+      {/if}
     {:else}
       <div class="center">
         <Icon name={NormalIcon.skull_crossbones} size={Gap.xl} />
