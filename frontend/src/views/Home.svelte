@@ -2,16 +2,22 @@
   import { onMount } from "svelte";
   import Button from "../components/Button.svelte";
   import Icon from "../components/Icon.svelte";
-  import { ButtonType, BrandIcon, Color, Size } from "../types/components";
+  import { ButtonType, BrandIcon, Color } from "../types/components";
   import { user } from "../stores";
   import { copyToClipboard } from "../utils";
   import Chat from "./Chat.svelte";
   import Input from "../components/Input.svelte";
+  import { paths } from "../constants";
+  import RootLayout from "../layouts/RootLayout.svelte";
 
   let youtubeColor: Color = Color.youtube;
   let youtubeText: string = "Link your Youtube account";
   let twitchColor: Color = Color.twitch;
   let twitchText: string = "Link your Twitch account";
+
+  const chatEmbedURI: string = `${window.location.href.slice(0, -1)}${
+    paths.CHAT
+  }/${$user.chatEmbedSecret}`;
 
   onMount(() => {
     if (!$user.hasYoutubeAuth) return;
@@ -59,44 +65,46 @@
   }
 </style>
 
-<div class="root">
-  <section>
-    <h1>Your chat</h1>
-    <div class="chat">
-      {#if $user.hasYoutubeAuth}
-        <div class="col">
-          <Input
-            label="OBS Embed Link"
-            help="Click to copy your embed link"
-            value={$user.chatEmbedSecret || 'banana'}
-            readonly={true}
-            click={() => copyToClipboard($user.chatEmbedSecret)} />
-          <Button>Get new link</Button>
-        </div>
-        <Chat
-          maxHeight="30rem"
-          withLayout={false}
-          withInput={false}
-          streamer={$user.username} />
-      {:else}
-        <p>Your account isn't linked to Youtube!</p>
-      {/if}
-    </div>
-  </section>
-  <aside>
-    <Button
-      type={ButtonType.button}
-      color={youtubeColor}
-      click={() => window.location.replace('/api/auth/google')}>
-      <Icon name={BrandIcon.youtube} />
-      {youtubeText}
-    </Button>
-    <Button
-      type={ButtonType.button}
-      color={twitchColor}
-      click={() => window.location.replace('/api/auth/google')}>
-      <Icon name={BrandIcon.twitch} />
-      {twitchText}
-    </Button>
-  </aside>
-</div>
+<RootLayout>
+  <div class="root">
+    <section>
+      <h1>Your chat</h1>
+      <div class="chat">
+        {#if $user.hasYoutubeAuth}
+          <div class="col">
+            <Input
+              label="OBS Embed Link"
+              help="Click to copy your embed link"
+              value={chatEmbedURI}
+              readonly={true}
+              click={() => copyToClipboard(chatEmbedURI)} />
+            <Button>Get new link</Button>
+          </div>
+          <Chat
+            maxHeight="30rem"
+            withLayout={false}
+            withInput={false}
+            token={$user.token} />
+        {:else}
+          <p>Your account isn't linked to Youtube!</p>
+        {/if}
+      </div>
+    </section>
+    <aside>
+      <Button
+        type={ButtonType.button}
+        color={youtubeColor}
+        click={() => window.location.replace('/api/auth/google')}>
+        <Icon name={BrandIcon.youtube} />
+        {youtubeText}
+      </Button>
+      <Button
+        type={ButtonType.button}
+        color={twitchColor}
+        click={() => window.location.replace('/api/auth/google')}>
+        <Icon name={BrandIcon.twitch} />
+        {twitchText}
+      </Button>
+    </aside>
+  </div>
+</RootLayout>

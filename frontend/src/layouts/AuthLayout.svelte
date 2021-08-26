@@ -1,4 +1,5 @@
 <script lang="ts">
+  import RootLayout from "./RootLayout.svelte";
 </script>
 
 <style>
@@ -17,8 +18,10 @@
   }
 </style>
 
-<div class="wrapper">
-  <div class="card">
-    <slot />
+<RootLayout>
+  <div class="wrapper">
+    <div class="card">
+      <slot />
+    </div>
   </div>
-</div>
+</RootLayout>

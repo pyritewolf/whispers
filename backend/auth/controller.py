@@ -170,7 +170,7 @@ async def get_token_contents(schema: BaseSchema, token: str = Depends(oauth2_sch
     try:
         payload = jwt.decode(token, settings.JWT_KEY, algorithms=["HS512"])
         return schema.parse_obj(payload)
-    except jwt.PyJWTError:
+    except:  # noqa: E722
         return None
     return None
 
@@ -180,8 +180,12 @@ async def get_current_user(
 ) -> user_schemas.UserIn:
     token_data = await get_token_contents(schemas.UserToken, token=token)
     if token_data is None:
-        raise CREDENTIALS_EXCEPTION
-    user = await crud.get_by(db, "id", token_data.id)
+        token_data = await get_token_contents(schemas.ChatToken, token=token)
+        if token_data is None:
+            raise CREDENTIALS_EXCEPTION
+        user = await crud.get_by(db, "email", token_data.email)
+    else:
+        user = await crud.get_by(db, "id", token_data.id)
     if user is None:
         raise CREDENTIALS_EXCEPTION
     return user_schemas.UserIn.from_orm(user)

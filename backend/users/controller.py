@@ -21,8 +21,8 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
             condition = func.lower(getattr(models.User, field)) == value.lower()
         return db.query(models.User).filter(condition).one_or_none()
 
-    def get_chat_token(email: str):
-        return create_jwt_token({"email": email, "created_at": datetime.now()})
+    def get_chat_token(self, email: str):
+        return create_jwt_token({"email": email, "created_at": str(datetime.now())})
 
     async def create(self, db: Session, user: auth_schemas.Register) -> models.User:
         pre_existing_user = await self.get_by(db, "email", user.email)

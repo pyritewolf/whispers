@@ -9,16 +9,18 @@
 
   export let withLayout: boolean = true;
   export let withInput: boolean = true;
-  export let streamer: string;
+  export let token: string;
   export let maxHeight: string = "100vh";
 
   let socket: WebSocket;
   let newMessage: string = "";
 
   const isStreamerOn = async () => {
-    const response = await $api(`/live/is_chat_open/${streamer}`);
+    const response = await $api(`/live/is_chat_open`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     if (response.status === APIStatus.ok)
-      socket = chat.setUpSocket(response.body, streamer);
+      socket = chat.setUpSocket(response.body, token);
     return response;
   };
   const promise = isStreamerOn();

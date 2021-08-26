@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 
 from pydantic import SecretStr, validator
 
@@ -45,6 +46,11 @@ class NewPassword(Token):
 
 class UserToken(BaseSchema):
     id: int
+
+
+class ChatToken(BaseSchema):
+    email: str
+    created_at: datetime
 
 
 class GoogleAuthTokens(BaseSchema):
