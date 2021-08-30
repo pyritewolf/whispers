@@ -14,11 +14,13 @@ class UserBase(BaseSchema):
 class UserOut(UserBase):
     id: int
     has_youtube_auth: bool = False
+    chat_embed_secret: Optional[str] = None
 
 
 class UserAuthed(UserBase):
     id: int
     token: str
+    chat_embed_secret: Optional[str] = None
 
 
 class UserIn(UserBase):
