@@ -4,33 +4,55 @@ import type { ChatConfig } from "../types/entities";
 const messageStore = writable([]);
 
 const sendMessage = (message, socket) => {
-  if (socket.readyState <= 1) {
-    socket.send(message);
-  }
+  if (socket.readyState <= 1) socket.send(message);
 };
 
-const setUpSocket = (configs: ChatConfig, token: string) => {
+const clearMessages = (messages) => {
+  setTimeout(() => {
+    messageStore.update((msgs) =>
+      msgs.map((message) => {
+        if (messages.includes(message)) message.fade = new Date();
+        return message;
+      })
+    );
+  }, 10000);
+};
+
+const setUpSocket = (
+  configs: ChatConfig,
+  token: string,
+  autoClearMessages: boolean = true
+) => {
   let socket = new WebSocket(
     `ws://${configs.serverUrl}/api/live/chat/${token}?youtube_chat_id=${configs.youtubeChatId}`
   );
 
   // Connection opened
-  socket.addEventListener("open", function (event) {
-    messageStore.update((messages) => [
-      ...messages,
-      { text: "The chat is connected!" },
-    ]);
+  socket.addEventListener("open", () => {
+    const msg = { text: "The chat is connected!" };
+    messageStore.update((messages) => [...messages, msg]);
+    if (!autoClearMessages) return;
+    clearMessages([msg]);
   });
 
   // Listen for messages
-  socket.addEventListener("message", function (event) {
-    console.log(event.data);
-    messageStore.update((messages) => [...messages, ...JSON.parse(event.data)]);
+  socket.addEventListener("message", (event) => {
+    let newMessages = JSON.parse(event.data);
+    messageStore.update((messages) => [
+      ...messages.filter(
+        (message) =>
+          !("fade" in message) ||
+          Math.floor((new Date().getTime() - message.fade.getTime()) / 1000) <=
+            1
+      ),
+      ...newMessages,
+    ]);
+    if (!autoClearMessages) return;
+    clearMessages(newMessages);
   });
 
   // Connection opened
-  socket.onclose = (event) => {
-    console.log(event);
+  socket.onclose = () => {
     messageStore.update((messages) => [
       ...messages,
       { text: "The chat has disconnected. Try reloading!" },
