@@ -73,7 +73,6 @@ export type APIError = {
 
 export const getErrorFor = (key: string, errors: Array<APIError> | null) => {
   if (!errors) return;
-  console.log(errors);
   const error = errors.find((e) => e.loc.includes(key));
   if (!error) return null;
   return error.msg;
