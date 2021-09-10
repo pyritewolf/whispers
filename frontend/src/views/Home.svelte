@@ -5,6 +5,7 @@
   import {
     ButtonType,
     BrandIcon,
+    NormalIcon,
     Color,
     APIStatus,
     getErrorFor,
@@ -88,10 +89,12 @@
         {#if $user.hasYoutubeAuth}
           <div class="col">
             <Input
+              name="obs-embed-link"
               label="OBS Embed Link"
               help="Click to copy your embed link"
               value={chatEmbedURI($user)}
               readonly={true}
+              iconRight={NormalIcon.copy}
               click={() => copyToClipboard(chatEmbedURI($user))}
               error={getErrorFor('user', formError)} />
             <Button click={handleUpdateChatToken}>Get new link</Button>
