@@ -13,6 +13,7 @@ def seed_user(db: Session, obj: Dict = {}):
         "password": "coolfirstageharper",
         "username": "finarfin",
         "recovery_token": None,
+        "chat_embed_secret": "a token",
         **obj,
     }
     user_dict["password"] = get_hashed_password(SecretStr(user_dict["password"]))
