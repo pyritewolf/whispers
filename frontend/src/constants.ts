@@ -1,6 +1,6 @@
 export const paths = {
   HOME: "/",
-  SIGN_IN: "/login",
+  SIGN_IN: "/signin",
   REGISTER: "/register",
   ONBOARDING: "/onboarding",
   PASSWORD_RECOVERY: "/password_recovery",

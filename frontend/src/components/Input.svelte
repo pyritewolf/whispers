@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import { InputType } from "../types/components";
+  import { Gap, InputType } from "../types/components";
+  import type { IconName } from "../types/components";
+  import Icon from "./Icon.svelte";
 
   export let name: string;
   export let placeholder: string = "";
@@ -12,7 +14,9 @@
   export let error: string | null = null;
   export let autofocus: boolean = false;
   export let readonly: boolean = false;
-  export let click: function | null = null;
+  export let click: Function | null = null;
+  export let iconLeft: IconName | null = null;
+  export let iconRight: IconName | null = null;
 
   let inputElement;
   let focused: boolean = false;
@@ -33,7 +37,7 @@
 </script>
 
 <style>
-  .input {
+  .root {
     height: 5.5rem;
     padding-bottom: var(--gap-lg);
   }
@@ -71,17 +75,31 @@
     color: var(--error);
   }
 
-  input {
+  .input {
     background-color: var(--gray);
-    width: 100%;
     color: var(--white);
     font-size: var(--font-md);
     border: 1px solid var(--transparent);
     border-radius: var(--radius);
     transition: var(--transition);
+    display: flex;
+    align-items: center;
+    padding: var(--gap-sm);
+    gap: var(--gap-sm);
   }
 
-  input:focus {
+  input {
+    background-color: var(--transparent);
+    color: var(--white);
+    width: 100%;
+    font-size: inherit;
+    border: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0;
+  }
+
+  .input:focus {
     border: 1px solid var(--primary);
     transition: var(--transition);
   }
@@ -93,7 +111,7 @@
 </style>
 
 <div
-  class="input"
+  class="root"
   class:focused
   class:error={!!error}
   class:clickable={click !== null}
@@ -111,15 +129,23 @@
       <div class="error">{error}</div>
     {/if}
   </div>
-  <input
-    bind:this={inputElement}
-    {type}
-    {value}
-    {placeholder}
-    {name}
-    {required}
-    {readonly}
-    on:focus={() => (focused = true)}
-    on:blur={() => (focused = false)}
-    on:input={handleInput} />
+  <div class="input">
+    {#if iconLeft}
+      <Icon name={iconLeft} />
+    {/if}
+    <input
+      bind:this={inputElement}
+      {type}
+      {value}
+      {placeholder}
+      {name}
+      {required}
+      {readonly}
+      on:focus={() => (focused = true)}
+      on:blur={() => (focused = false)}
+      on:input={handleInput} />
+    {#if iconRight !== null}
+      <Icon name={iconRight} />
+    {/if}
+  </div>
 </div>

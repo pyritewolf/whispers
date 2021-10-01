@@ -12,25 +12,21 @@
     SetNewPassword,
     Chat,
   } from "./views";
+  import PrivateRoute from "./components/PrivateRoute.svelte";
 </script>
 
 <style>
 </style>
 
 <Router>
-  {#if $user}
-    <Route path={paths.HOME}>
-      <Home />
-    </Route>
-    <Route path={paths.OAUTH_GOOGLE_CALLBACK}>
-      <OauthCallback name="Youtube" />
-    </Route>
-    <Route path={`${paths.CHAT}`}>
-      <Chat token={$user.token} />
-    </Route>
-  {:else}
-    <Route path={paths.REGISTER} component={Register} />
-  {/if}
+  <PrivateRoute path={paths.HOME} component={Home} />
+  <PrivateRoute path={paths.OAUTH_GOOGLE_CALLBACK}>
+    <OauthCallback name="Youtube" />
+  </PrivateRoute>
+  <PrivateRoute path={`${paths.CHAT}`}>
+    <Chat token={$user.token} />
+  </PrivateRoute>
+  <Route path={paths.REGISTER} component={Register} />
   <Route path={paths.PASSWORD_RECOVERY} component={PasswordRecovery} />
   <Route path={paths.NEW_PASSWORD} component={SetNewPassword} />
   <Route path={paths.SIGN_IN} component={SignIn} />
