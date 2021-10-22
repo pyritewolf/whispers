@@ -2,28 +2,44 @@
   import { onMount } from "svelte";
   import Button from "../components/Button.svelte";
   import Icon from "../components/Icon.svelte";
-  import { ButtonType, BrandIcon, Color } from "../types/components";
-  import { user } from "../stores";
+  import {
+    ButtonType,
+    BrandIcon,
+    NormalIcon,
+    Color,
+    APIStatus,
+    getErrorFor,
+  } from "../types/components";
+  import { api, user } from "../stores";
   import { copyToClipboard } from "../utils";
   import Chat from "./Chat.svelte";
   import Input from "../components/Input.svelte";
   import { paths } from "../constants";
   import RootLayout from "../layouts/RootLayout.svelte";
+  import type { User } from "../types/entities";
 
   let youtubeColor: Color = Color.youtube;
   let youtubeText: string = "Link your Youtube account";
   let twitchColor: Color = Color.twitch;
   let twitchText: string = "Link your Twitch account";
 
-  const chatEmbedURI: string = `${window.location.href.slice(0, -1)}${
-    paths.CHAT
-  }/${$user.chatEmbedSecret}`;
+  let formError = null;
 
   onMount(() => {
     if (!$user.hasYoutubeAuth) return;
     youtubeColor = Color.gray;
     youtubeText = "Click to refresh your Youtube auth";
   });
+
+  const chatEmbedURI = (u: User): string =>
+    `${window.location.href.slice(0, -1)}${paths.CHAT}/${u.chatEmbedSecret}`;
+
+  const handleUpdateChatToken = async () => {
+    let response = await $api("/me/refresh_chat_token");
+    if (response.status === APIStatus.error) return (formError = response.body);
+    formError = null;
+    user.update(() => response.body);
+  };
 </script>
 
 <style>
@@ -73,12 +89,15 @@
         {#if $user.hasYoutubeAuth}
           <div class="col">
             <Input
+              name="obs-embed-link"
               label="OBS Embed Link"
               help="Click to copy your embed link"
-              value={chatEmbedURI}
+              value={chatEmbedURI($user)}
               readonly={true}
-              click={() => copyToClipboard(chatEmbedURI)} />
-            <Button>Get new link</Button>
+              iconRight={NormalIcon.copy}
+              click={() => copyToClipboard(chatEmbedURI($user))}
+              error={getErrorFor('user', formError)} />
+            <Button click={handleUpdateChatToken}>Get new link</Button>
           </div>
           <Chat
             maxHeight="30rem"

@@ -1,5 +1,4 @@
 from typing import Union, Optional
-from datetime import datetime
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -22,7 +21,17 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
         return db.query(models.User).filter(condition).one_or_none()
 
     def get_chat_token(self, email: str):
-        return create_jwt_token({"email": email, "created_at": str(datetime.now())})
+        return create_jwt_token({"email": email})
+
+    async def refresh_chat_token(
+        self, db: Session, user: schemas.UserIn
+    ) -> schemas.UserOut:
+        db_user = await self.get_by(db, "email", user.email)
+        db_user.chat_embed_secret = self.get_chat_token(user.email)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return schemas.UserOut.from_orm(db_user)
 
     async def create(self, db: Session, user: auth_schemas.Register) -> models.User:
         pre_existing_user = await self.get_by(db, "email", user.email)
@@ -46,7 +55,7 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
         db_user = models.User(
             **user_dict,
             password=get_hashed_password(user_dict.pop("password", "")),
-            chat_embed_secret=self.get_chat_token(user_dict["email"]),
+            chat_embed_secret=self.get_chat_token(user.email),
         )
         db.add(db_user)
         db.commit()
