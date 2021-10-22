@@ -79,7 +79,7 @@ async def handle_get_chat_messages(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=get_pydanticlike_error(
-                "streams", "Something went wrong getting your Youtube streams.",
+                "streams", "Something went wrong getting your Youtube chat messages.",
             ),
         )
     result = response.json()
@@ -123,7 +123,7 @@ async def handle_chat(
                 if not queue.empty():
                     data = queue.get_nowait()
                     await manager.broadcast(data)
-                await asyncio.sleep(0.2)
+                await asyncio.sleep(1)
 
         await asyncio.gather(
             get_chat_messages(manager, db, youtube_chat_id, user),
