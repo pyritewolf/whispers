@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { Link } from "svelte-navigator";
+  import { Link, navigate } from "svelte-navigator";
   import { paths } from "../constants";
   import { api, user } from "../stores";
 
   const signOut = async () => {
     await $api("/auth/signout");
     user.set(null);
-    window.location.replace(paths.SIGN_IN);
+    navigate(paths.SIGN_IN);
   };
 </script>
 

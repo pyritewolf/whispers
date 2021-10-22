@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link } from "svelte-navigator";
+  import { Link, navigate } from "svelte-navigator";
   import { paths } from "../constants";
   import { api } from "../stores";
   import AuthLayout from "../layouts/AuthLayout.svelte";
@@ -31,7 +31,7 @@
     if (response.status === APIStatus.error) return (formError = response.body);
     formError = null;
     user.set(response.body);
-    window.location.replace(paths.HOME);
+    navigate(paths.HOME);
   };
 </script>
 
