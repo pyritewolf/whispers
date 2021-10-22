@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Link } from "svelte-navigator";
+  import { Link, navigate } from "svelte-navigator";
   import { api, user } from "../stores";
   import AuthLayout from "../layouts/AuthLayout.svelte";
   import Icon from "../components/Icon.svelte";
@@ -19,7 +19,7 @@
       }, 1000);
     else
       setTimeout(() => {
-        window.location.replace(paths.HOME);
+        navigate(paths.HOME);
       }, 1000);
   };
 

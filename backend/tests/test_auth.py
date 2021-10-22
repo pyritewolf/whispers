@@ -185,7 +185,6 @@ def test_google_auth_callback_invalid_google_token(setup, db, patched_requests):
         headers=get_auth_for(db_user),
         json={"token": "whatever"},
     )
-    print(response.json())
     assert response.status_code == 500
 
 

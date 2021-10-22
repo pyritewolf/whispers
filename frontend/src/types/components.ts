@@ -24,6 +24,7 @@ export enum NormalIcon {
   thumbs_up = "thumbs-up",
   skull_crossbones = "skull-crossbones",
   comments = "comments",
+  copy = "copy",
 }
 
 export enum BrandIcon {
@@ -47,6 +48,7 @@ export enum Gap {
 
 export enum Color {
   gray = "--gray",
+  lighterGray = "--lighter-gray",
   secondary = "--secondary",
   primary = "--primary",
   error = "--error",
@@ -73,7 +75,6 @@ export type APIError = {
 
 export const getErrorFor = (key: string, errors: Array<APIError> | null) => {
   if (!errors) return;
-  console.log(errors);
   const error = errors.find((e) => e.loc.includes(key));
   if (!error) return null;
   return error.msg;

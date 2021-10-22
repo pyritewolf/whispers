@@ -17,10 +17,6 @@
 </script>
 
 <style>
-  .system {
-    font-style: italic;
-  }
-
   section {
     height: 100%;
     display: flex;
@@ -29,11 +25,27 @@
     overflow-y: auto;
     overflow-x: hidden;
   }
+
+  .system {
+    font-style: italic;
+  }
+
+  .message {
+    transition: var(--transition);
+  }
+
+  .fade {
+    transition: 0.7s;
+    opacity: 0;
+  }
 </style>
 
 <section bind:this={chatRoot}>
   {#each $chat as message}
-    <p class:system={!('username' in message)}>
+    <p
+      class:fade={!!message.fade}
+      class:system={!('username' in message)}
+      class="message">
       {#if 'username' in message}<strong>{message.username}</strong>:{/if}
       {message.text}
     </p>

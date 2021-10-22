@@ -50,11 +50,11 @@ async def not_found_exception_handler(
 manager = ConnectionManager()
 
 
-@app.websocket("/api/live/chat/{streamer}")
+@app.websocket("/api/live/chat/{token}")
 async def livechat_websocket(
     websocket: WebSocket,
-    streamer: str,
+    token: str,
     youtube_chat_id: str,
     db: Session = Depends(get_session),
 ):
-    await live_controller.handle_chat(manager, websocket, db, youtube_chat_id, streamer)
+    await live_controller.handle_chat(manager, websocket, db, youtube_chat_id, token)
