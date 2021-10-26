@@ -9,16 +9,18 @@
 
   export let withLayout: boolean = true;
   export let withInput: boolean = true;
-  export let streamer: string;
+  export let token: string;
   export let maxHeight: string = "100vh";
 
   let socket: WebSocket;
   let newMessage: string = "";
 
   const isStreamerOn = async () => {
-    const response = await $api(`/live/is_chat_open/${streamer}`);
+    const response = await $api(`/live/is_chat_open`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
     if (response.status === APIStatus.ok)
-      socket = chat.setUpSocket(response.body, streamer);
+      socket = chat.setUpSocket(response.body, token);
     return response;
   };
   const promise = isStreamerOn();
@@ -82,17 +84,21 @@
       <div class="chat">
         <ChatMessages />
       </div>
-      <form autocomplete="off" on:submit|preventDefault={handleSubmit}>
-        <div class="input">
-          <Input
-            name="send-message"
-            placeholder="nice move!"
-            bind:value={newMessage} />
-        </div>
-        <div class="button">
-          <Button color={newMessage ? Color.primary : Color.gray}>Send</Button>
-        </div>
-      </form>
+      {#if withInput}
+        <form autocomplete="off" on:submit|preventDefault={handleSubmit}>
+          <div class="input">
+            <Input
+              name="send-message"
+              placeholder="nice move!"
+              bind:value={newMessage} />
+          </div>
+          <div class="button">
+            <Button color={newMessage ? Color.primary : Color.gray}>
+              Send
+            </Button>
+          </div>
+        </form>
+      {/if}
     {:else}
       <div class="center">
         <Icon name={NormalIcon.skull_crossbones} size={Gap.xl} />

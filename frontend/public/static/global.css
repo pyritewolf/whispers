@@ -1,4 +1,5 @@
 html, body {
+	background-color: transparent;
 	position: relative;
 	width: 100%;
 	height: 100%;
@@ -14,8 +15,12 @@ html, body {
 	--dark-gray: #333;
 	--gray: #4f4f4f;
 	--lighter-gray: #aaa;
-	--primary: #368B85;
-	--secondary: #B4B897;
+	--lighter-secondary: #f4edfc;
+	--light-secondary: #e6d7f7;
+	--secondary: #8c5ac4;
+	--lighter-primary: #e0fcff;
+	--light-primary: #bee8ed;
+	--primary: #53aab5;
 	--error: indianred;
 	--white: white;
 	--transparent: transparent;
@@ -36,7 +41,6 @@ html, body {
 }
 
 body {
-	background-color: var(--darkest-gray);
 	color: var(--white);
 	font-size: var(--font-md);
 	margin: 0;

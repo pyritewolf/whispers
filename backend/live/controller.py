@@ -12,23 +12,31 @@ from websocket import ConnectionManager
 from config import settings
 from exceptions import get_pydanticlike_error
 from users.schemas import UserIn
-from users.controller import crud as user_crud
-from auth.controller import refresh_google_tokens
+from auth.controller import refresh_google_tokens, get_current_user
 from live import schemas
 
 
+# TODO: Need to figure this out for Twitch
 async def _request_to_google(
-    db: Session, method: str, request_args: Dict[str, Any], user: UserIn
+    db: Session,
+    method: str,
+    request_args: Dict[str, Any],
+    user: Optional[UserIn] = None,
 ):
     if "headers" not in request_args:
         request_args["headers"] = {}
-    request_args["headers"].update(
-        {"Authorization": f"Bearer {user.google_auth_token}"}
-    )
+    if user:
+        request_args["headers"].update(
+            {"Authorization": f"Bearer {user.google_auth_token}"}
+        )
+    else:
+        request_args["url"] = f'{request_args["url"]}&key={settings.GOOGLE_API_KEY}'
     response = getattr(requests, method)(**request_args)
     if response.status_code == 401:
         user = await refresh_google_tokens(db, user)
         response = getattr(requests, method)(**request_args)
+    if response.status_code != 200:
+        logging.warning(f"Fetch to google failed, body was {response.json()}")
     return response
 
 
@@ -49,8 +57,7 @@ async def handle_find_streams(
                 "streams", "Something went wrong getting your Youtube streams."
             ),
         )
-    result = response.json()
-    result = schemas.YoutubeBroadcastResponse.parse_obj(result)
+    result = schemas.YoutubeBroadcastResponse.parse_obj(response.json())
     return result.items
 
 
@@ -73,7 +80,8 @@ async def handle_get_chat_messages(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=get_pydanticlike_error(
-                "streams", "Something went wrong getting your Youtube streams.",
+                "streams",
+                "Something went wrong getting your Youtube streams.",
             ),
         )
     result = response.json()
@@ -86,12 +94,11 @@ async def handle_chat(
     websocket: WebSocket,
     db: Session,
     youtube_chat_id: str,
-    streamer: str,
+    token: str,
 ):
     await manager.connect(websocket)
     try:
-        db_user = await user_crud.get_by(db, "username", streamer)
-        user = UserIn.from_orm(db_user)
+        user = await get_current_user(token, db)
         queue = asyncio.queues.Queue()
 
         async def get_chat_messages(manager, db, youtube_chat_id, user):

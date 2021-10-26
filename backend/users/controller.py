@@ -1,4 +1,5 @@
 from typing import Union, Optional
+from datetime import datetime
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
@@ -8,7 +9,7 @@ from exceptions import get_pydanticlike_error
 from db.generic_crud import CRUDBase
 from auth import schemas as auth_schemas
 from users import models, schemas
-from security import get_hashed_password
+from security import get_hashed_password, create_jwt_token
 
 
 class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
@@ -19,6 +20,9 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
         if field in ["email", "username"]:
             condition = func.lower(getattr(models.User, field)) == value.lower()
         return db.query(models.User).filter(condition).one_or_none()
+
+    def get_chat_token(self, email: str):
+        return create_jwt_token({"email": email, "created_at": str(datetime.now())})
 
     async def create(self, db: Session, user: auth_schemas.Register) -> models.User:
         pre_existing_user = await self.get_by(db, "email", user.email)
@@ -40,7 +44,9 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
         user_dict = user.dict(exclude_unset=True)
         user_dict.pop("confirm_password")
         db_user = models.User(
-            **user_dict, password=get_hashed_password(user_dict.pop("password", "")),
+            **user_dict,
+            password=get_hashed_password(user_dict.pop("password", "")),
+            chat_embed_secret=self.get_chat_token(user_dict["email"]),
         )
         db.add(db_user)
         db.commit()

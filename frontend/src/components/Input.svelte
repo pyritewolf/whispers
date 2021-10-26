@@ -11,6 +11,8 @@
   export let help: string | null = null;
   export let error: string | null = null;
   export let autofocus: boolean = false;
+  export let readonly: boolean = false;
+  export let click: function | null = null;
 
   let inputElement;
   let focused: boolean = false;
@@ -60,8 +62,9 @@
     transition: var(--transition);
   }
 
-  .focused .top .help {
-    color: var(--gray);
+  .focused .top .help,
+  .clickable .top .help {
+    color: var(--lighter-gray);
   }
 
   .top .error {
@@ -73,7 +76,7 @@
     width: 100%;
     color: var(--white);
     font-size: var(--font-md);
-    border: 1px double var(--transparent);
+    border: 1px solid var(--transparent);
     border-radius: var(--radius);
     transition: var(--transition);
   }
@@ -82,9 +85,19 @@
     border: 1px solid var(--primary);
     transition: var(--transition);
   }
+
+  .clickable,
+  .clickable input {
+    cursor: pointer;
+  }
 </style>
 
-<div class="input" class:focused class:error={!!error}>
+<div
+  class="input"
+  class:focused
+  class:error={!!error}
+  class:clickable={click !== null}
+  on:click={() => click !== null && click()}>
   <div class="top">
     {#if label}
       <label for={name}>
@@ -105,6 +118,7 @@
     {placeholder}
     {name}
     {required}
+    {readonly}
     on:focus={() => (focused = true)}
     on:blur={() => (focused = false)}
     on:input={handleInput} />

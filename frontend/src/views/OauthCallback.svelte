@@ -7,6 +7,7 @@
   import { paths } from "../constants";
 
   export let name: string;
+  export let path: string;
   let seconds: number = 5;
 
   const token = new URLSearchParams(window.location.search).get("code");
@@ -25,7 +26,7 @@
 
   const verifyToken = async () => {
     if (!token) throw Error("Uh-oh. Auth failed.");
-    const result = await $api("/auth/google/callback", {
+    const result = await $api(`/auth/${path}/callback`, {
       method: "POST",
       body: JSON.stringify({ token }),
     });

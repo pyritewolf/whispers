@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 
 from pydantic import SecretStr, validator
 
@@ -47,7 +48,19 @@ class UserToken(BaseSchema):
     id: int
 
 
+class ChatToken(BaseSchema):
+    email: str
+    created_at: datetime
+
+
 class GoogleAuthTokens(BaseSchema):
+    access_token: str
+    token_type: str
+    expires_in: str
+    refresh_token: Optional[str] = None
+
+
+class TwitchAuthTokens(BaseSchema):
     access_token: str
     token_type: str
     expires_in: str
