@@ -39,7 +39,8 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=get_pydanticlike_error(
-                    "email", "Yikes, that email is already in use",
+                    "email",
+                    "Yikes, that email is already in use",
                 ),
             )
         pre_existing_user = await self.get_by(db, "username", user.username)
@@ -47,7 +48,8 @@ class CRUDUser(CRUDBase[models.User, auth_schemas.Register, schemas.UserOut]):
             raise HTTPException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=get_pydanticlike_error(
-                    "username", "Oh no! Someone beat you to that username",
+                    "username",
+                    "Oh no! Someone beat you to that username",
                 ),
             )
         user_dict = user.dict(exclude_unset=True)

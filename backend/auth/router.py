@@ -60,14 +60,18 @@ async def sign_in(
 
 @router.post("/password_recovery")
 async def password_recovery(
-    data: PasswordRecovery, db: Session = Depends(get_session),
+    data: PasswordRecovery,
+    db: Session = Depends(get_session),
 ) -> None:
     await controller.handle_password_recovery(db=db, email=data.email)
     return None
 
 
 @router.post("/new_password")
-async def new_password(data: NewPassword, db: Session = Depends(get_session),) -> None:
+async def new_password(
+    data: NewPassword,
+    db: Session = Depends(get_session),
+) -> None:
     await controller.handle_set_new_password(db=db, data=data)
     return None
 
@@ -138,5 +142,5 @@ async def complete_auth_with_twitch(
     user=Depends(controller.get_current_user),
     db: Session = Depends(get_session),
 ) -> UserOut:
-    db_user = await controller.auth_with_google(db, user, data.token)
+    db_user = await controller.auth_with_twitch(db, user, data.token)
     return UserOut.from_orm(db_user)

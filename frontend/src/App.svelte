@@ -21,8 +21,11 @@
 <Router>
   <PrivateRoute path={paths.HOME} component={Home} />
   <PrivateRoute path={paths.OAUTH_GOOGLE_CALLBACK}>
-    <OauthCallback name="Youtube" />
+    <OauthCallback name="Youtube" path="google" />
   </PrivateRoute>
+  <Route path={paths.OAUTH_TWITCH_CALLBACK}>
+    <OauthCallback name="Twitch" path="twitch" />
+  </Route>
   <PrivateRoute path={`${paths.CHAT}`}>
     <Chat token={$user.token} />
   </PrivateRoute>
