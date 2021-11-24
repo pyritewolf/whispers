@@ -58,3 +58,10 @@ class GoogleAuthTokens(BaseSchema):
     token_type: str
     expires_in: str
     refresh_token: Optional[str] = None
+
+
+class TwitchAuthTokens(BaseSchema):
+    access_token: str
+    token_type: str
+    expires_in: str
+    refresh_token: Optional[str] = None

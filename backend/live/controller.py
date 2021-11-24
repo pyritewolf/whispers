@@ -16,6 +16,7 @@ from auth.controller import refresh_google_tokens, get_current_user
 from live import schemas
 
 
+# TODO: Need to figure this out for Twitch
 async def _request_to_google(
     db: Session,
     method: str,
@@ -79,7 +80,8 @@ async def handle_get_chat_messages(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=get_pydanticlike_error(
-                "streams", "Something went wrong getting your Youtube chat messages.",
+                "streams",
+                "Something went wrong getting your Youtube streams.",
             ),
         )
     result = response.json()

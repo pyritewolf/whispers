@@ -85,7 +85,8 @@ async def handle_register(db: Session, user: schemas.Register) -> user_schemas.U
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=get_pydanticlike_error(
-                "user", "We couldn't send you your registration email. Try again?",
+                "user",
+                "We couldn't send you your registration email. Try again?",
             ),
         )
     return new_user
@@ -96,7 +97,10 @@ async def handle_onboarding(db: Session, token: str) -> None:
     if not db_user:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=get_pydanticlike_error("token", "This link is invalid!",),
+            detail=get_pydanticlike_error(
+                "token",
+                "This link is invalid!",
+            ),
         )
     crud.update(db=db, db_obj=db_user, obj_in={"recovery_token": None})
 
@@ -142,7 +146,8 @@ async def handle_set_new_password(db: Session, data: schemas.NewPassword) -> Non
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=get_pydanticlike_error(
-                "password", "This link is invalid! Restart the password recovery",
+                "password",
+                "This link is invalid! Restart the password recovery",
             ),
         )
     db_user.password = get_hashed_password(data.password)
@@ -209,7 +214,8 @@ async def _get_google_tokens(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=get_pydanticlike_error(
-                "oauth", "Something went wrong while fetching your tokens from Google.",
+                "oauth",
+                "Something went wrong while fetching your tokens from Google.",
             ),
         )
     response_json = response.json()
@@ -220,7 +226,11 @@ async def _get_google_tokens(
     if tokens.refresh_token:
         token_data["google_refresh_token"] = tokens.refresh_token
     user = await crud.get_by(db, "id", user.id)
-    return crud.update(db=db, db_obj=user, obj_in=token_data,)
+    return crud.update(
+        db=db,
+        db_obj=user,
+        obj_in=token_data,
+    )
 
 
 async def auth_with_google(
@@ -243,4 +253,64 @@ async def refresh_google_tokens(
         "grant_type": "refresh_token",
     }
     db_user = await _get_google_tokens(db, user, auth_completion)
+    return user_schemas.UserIn.from_orm(db_user)
+
+
+async def _get_twitch_tokens(
+    db: Session, user: user_schemas.UserIn, request_args: Dict[str, str]
+) -> models.User:
+    request_args.update(
+        {
+            "client_id": settings.TWITCH_OAUTH_CLIENT,
+            "client_secret": settings.TWITCH_OAUTH_SECRET,
+        }
+    )
+    response = requests.post(
+        "https://id.twitch.tv/oauth2/token",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data=urlencode(request_args),
+    )
+    if response.status_code != 200:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=get_pydanticlike_error(
+                "oauth",
+                "Something went wrong while fetching your tokens from Twitch.",
+            ),
+        )
+    response_json = response.json()
+    tokens = schemas.TwitchAuthTokens.parse_obj(response_json)
+    token_data = {
+        "twitch_auth_token": tokens.access_token,
+    }
+    if tokens.refresh_token:
+        token_data["twitch_refresh_token"] = tokens.refresh_token
+    user = await crud.get_by(db, "id", user.id)
+    return crud.update(
+        db=db,
+        db_obj=user,
+        obj_in=token_data,
+    )
+
+
+async def auth_with_twitch(
+    db: Session, user: user_schemas.UserIn, code: str
+) -> user_schemas.UserOut:
+    auth_completion = {
+        "code": code,
+        "redirect_uri": f"{settings.CLIENT_URL}/oauth/twitch/callback",
+        "grant_type": "authorization_code",
+    }
+    db_user = await _get_twitch_tokens(db, user, auth_completion)
+    return user_schemas.UserOut.from_orm(db_user)
+
+
+async def refresh_twitch_tokens(
+    db: Session, user: user_schemas.UserIn
+) -> user_schemas.UserIn:
+    auth_completion = {
+        "refresh_token": user.twitch_refresh_token,
+        "grant_type": "refresh_token",
+    }
+    db_user = await _get_twitch_tokens(db, user, auth_completion)
     return user_schemas.UserIn.from_orm(db_user)
