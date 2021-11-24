@@ -125,9 +125,7 @@
       <Button
         type={ButtonType.button}
         color={twitchColor}
-        click={() => window.location.replace('/api/auth/google')}>
         click={() => window.location.replace('/api/auth/twitch')}>
-
         <Icon name={BrandIcon.twitch} />
         {twitchText}
       </Button>
