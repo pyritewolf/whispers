@@ -110,7 +110,7 @@
             withInput={false}
             token={$user.token} />
         {:else}
-          <p>Your account isn't linked to Youtube!</p>
+          <p>Your account isn't linked to a service!</p>
         {/if}
       </div>
     </section>

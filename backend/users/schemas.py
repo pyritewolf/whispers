@@ -13,6 +13,7 @@ class UserBase(BaseSchema):
 
 class UserOut(UserBase):
     id: int
+    has_auth: bool = False
     has_twitch_auth: bool = False
     has_youtube_auth: bool = False
     chat_embed_secret: Optional[str] = None
