@@ -124,14 +124,20 @@ def test_register_with_failing_email(patched_requests, setup, db: Session):
 
 def test_onboarding_no_token(setup, db: Session):
     seed_user(db, {"recovery_token": "original_token"})
-    response = setup.post("/api/auth/onboard", json={"token": None},)
+    response = setup.post(
+        "/api/auth/onboard",
+        json={"token": None},
+    )
     print(response.json())
     assert response.status_code == 422
 
 
 def test_onboarding_wrong_token(setup, db: Session):
     seed_user(db, {"recovery_token": "original_token"})
-    response = setup.post("/api/auth/onboard", json={"token": "weird_token"},)
+    response = setup.post(
+        "/api/auth/onboard",
+        json={"token": "weird_token"},
+    )
     assert response.status_code == 422
 
 
@@ -214,3 +220,66 @@ def test_google_auth_callback(setup, db, patched_requests):
     assert response.status_code == 200
     assert db_user.google_auth_token == "access"
     assert db_user.google_refresh_token == "refresh"
+
+
+def test_twitch_auth_invalid_token(setup, db):
+    seed_user(db)
+    response = setup.get("/api/auth/twitch", headers=get_auth_for())
+    assert response.status_code == 401
+
+
+def test_twitch_auth(setup, db):
+    db_user = seed_user(db)
+    response = setup.get(
+        "/api/auth/twitch", headers=get_auth_for(db_user), allow_redirects=False
+    )
+    assert response.status_code == 307
+
+
+def test_twitch_auth_callback_invalid_user_token(setup, db):
+    seed_user(db)
+    response = setup.post("/api/auth/twitch/callback", headers=get_auth_for())
+    assert response.status_code == 401
+
+
+@pytest.mark.parametrize(
+    "patched_requests",
+    [{"method": "post", "status_code": 401}],
+    indirect=["patched_requests"],
+)
+def test_twitch_auth_callback_invalid_twitch_token(setup, db, patched_requests):
+    db_user = seed_user(db)
+    response = setup.post(
+        "/api/auth/twitch/callback",
+        headers=get_auth_for(db_user),
+        json={"token": "whatever"},
+    )
+    assert response.status_code == 500
+
+
+@pytest.mark.parametrize(
+    "patched_requests",
+    [
+        {
+            "method": "post",
+            "response": {
+                "access_token": "access",
+                "refresh_token": "refresh",
+                "expires_in": 1,
+                "token_type": "Bearer",
+            },
+        }
+    ],
+    indirect=["patched_requests"],
+)
+def test_twitch_auth_callback(setup, db, patched_requests):
+    db_user = seed_user(db)
+    response = setup.post(
+        "/api/auth/twitch/callback",
+        headers=get_auth_for(db_user),
+        json={"token": "whatever"},
+    )
+    db.refresh(db_user)
+    assert response.status_code == 200
+    assert db_user.twitch_auth_token == "access"
+    assert db_user.twitch_refresh_token == "refresh"

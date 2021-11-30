@@ -79,7 +79,8 @@ async def handle_get_chat_messages(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=get_pydanticlike_error(
-                "streams", "Something went wrong getting your Youtube chat messages.",
+                "streams",
+                "Something went wrong getting your Youtube streams.",
             ),
         )
     result = response.json()

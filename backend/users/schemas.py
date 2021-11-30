@@ -13,6 +13,8 @@ class UserBase(BaseSchema):
 
 class UserOut(UserBase):
     id: int
+    has_auth: bool = False
+    has_twitch_auth: bool = False
     has_youtube_auth: bool = False
     chat_embed_secret: Optional[str] = None
 
@@ -30,6 +32,9 @@ class UserIn(UserBase):
     has_youtube_auth: bool = False
     google_auth_token: Optional[str]
     google_refresh_token: Optional[str]
+    has_twitch_auth: bool = False
+    twitch_auth_token: Optional[str]
+    twitch_refresh_token: Optional[str]
 
 
 class UserUpdate(UserBase):
