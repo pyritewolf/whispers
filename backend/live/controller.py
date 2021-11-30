@@ -16,7 +16,6 @@ from auth.controller import refresh_google_tokens, get_current_user
 from live import schemas
 
 
-# TODO: Need to figure this out for Twitch
 async def _request_to_google(
     db: Session,
     method: str,
